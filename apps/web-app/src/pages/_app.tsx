@@ -4,15 +4,23 @@ import type { AppProps } from "next/app"
 import Head from "next/head"
 import { useRouter } from "next/router"
 import { useEffect, useState } from "react"
+import { WagmiConfig, createClient } from 'wagmi'
+import { getDefaultProvider } from 'ethers'
 import LogsContext from "../context/LogsContext"
 import SubgraphContext from "../context/SubgraphContext"
 import useSubgraph from "../hooks/useSubgraph"
 import theme from "../styles/index"
+import Navbar from "../components/Navbar"
 
 export default function App({ Component, pageProps }: AppProps) {
     const router = useRouter()
     const subgraph = useSubgraph()
     const [_logs, setLogs] = useState<string>("")
+
+    const client = createClient({
+        autoConnect: true,
+        provider: getDefaultProvider(),
+    })
 
     useEffect(() => {
         subgraph.refreshUsers()
@@ -31,35 +39,38 @@ export default function App({ Component, pageProps }: AppProps) {
                 <meta name="theme-color" content="#ebedff" />
             </Head>
 
-            <ChakraProvider theme={theme}>
-                <Container maxW="lg" flex="1" display="flex" alignItems="center">
-                    <Stack py="8" display="flex" width="100%">
-                        <SubgraphContext.Provider value={subgraph}>
-                            <LogsContext.Provider
-                                value={{
-                                    _logs,
-                                    setLogs
-                                }}
-                            >
-                                <Component {...pageProps} />
-                            </LogsContext.Provider>
-                        </SubgraphContext.Provider>
-                    </Stack>
-                </Container>
+            <WagmiConfig client={client}>
+                <ChakraProvider theme={theme}>
+                    <Navbar />
+                    <Container maxW="lg" flex="1" display="flex" alignItems="center">
+                        <Stack py="8" display="flex" width="100%">
+                            <SubgraphContext.Provider value={subgraph}>
+                                <LogsContext.Provider
+                                    value={{
+                                        _logs,
+                                        setLogs
+                                    }}
+                                >
+                                    <Component {...pageProps} />
+                                </LogsContext.Provider>
+                            </SubgraphContext.Provider>
+                        </Stack>
+                    </Container>
 
-                <HStack
-                    flexBasis="56px"
-                    borderTop="1px solid #8f9097"
-                    backgroundColor="#DAE0FF"
-                    align="center"
-                    justify="center"
-                    spacing="4"
-                    p="4"
-                >
-                    {_logs.endsWith("...") && <Spinner color="primary.400" />}
-                    <Text fontWeight="bold">{_logs || `Current step: ${router.route}`}</Text>
-                </HStack>
-            </ChakraProvider>
+                    <HStack
+                        flexBasis="56px"
+                        borderTop="1px solid #8f9097"
+                        backgroundColor="#DAE0FF"
+                        align="center"
+                        justify="center"
+                        spacing="4"
+                        p="4"
+                    >
+                        {_logs.endsWith("...") && <Spinner color="primary.400" />}
+                        <Text fontWeight="bold">{_logs || `Current step: ${router.route}`}</Text>
+                    </HStack>
+                </ChakraProvider>
+            </WagmiConfig>
         </>
     )
 }

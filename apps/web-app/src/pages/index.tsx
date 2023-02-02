@@ -1,16 +1,43 @@
 import { Box, Button, Divider, Heading, HStack, Link, ListItem, OrderedList, Text } from "@chakra-ui/react"
 import { Identity } from "@semaphore-protocol/identity"
 import { useRouter } from "next/router"
-import { useCallback, useContext, useEffect, useState } from "react"
+import { useCallback, useContext, useEffect, useState, useRef } from "react"
+import { useSignMessage, useAccount, useConnect } from 'wagmi'
+import { InjectedConnector } from 'wagmi/connectors/injected'
+import { verifyMessage } from 'ethers/lib/utils'
 import Stepper from "../components/Stepper"
 import LogsContext from "../context/LogsContext"
-import IconAddCircleFill from "../icons/IconAddCircleFill"
-import IconRefreshLine from "../icons/IconRefreshLine"
+
 
 export default function IdentitiesPage() {
     const router = useRouter()
     const { setLogs } = useContext(LogsContext)
     const [_identity, setIdentity] = useState<Identity>()
+    const { address, isConnected } = useAccount()
+    const { connect } = useConnect({
+        connector: new InjectedConnector(),
+    })
+    const recoveredAddress = useRef<string>()
+
+    const createIdentity = useCallback(async (signature: any) => {
+        console.log(signature)
+        const identity = new Identity(signature)
+
+        setIdentity(identity)
+
+        localStorage.setItem("identity", identity.toString())
+
+        setLogs("Your new Semaphore identity was just created 🎉")
+    }, [])
+
+    const { signMessageAsync } = useSignMessage({
+        message: 'gm zk3 frens', // <- changing the signing message destroys the link between all users and their existing identities
+        onSuccess(data, variables) {
+            // Verify signature when sign message succeeds
+            recoveredAddress.current = verifyMessage(variables.message, data)
+            createIdentity(data)
+        },
+    })
 
     useEffect(() => {
         const identityString = localStorage.getItem("identity")
@@ -26,46 +53,25 @@ export default function IdentitiesPage() {
         }
     }, [])
 
-    const createIdentity = useCallback(async () => {
-        const identity = new Identity()
-
-        setIdentity(identity)
-
-        localStorage.setItem("identity", identity.toString())
-
-        setLogs("Your new Semaphore identity was just created 🎉")
-    }, [])
+    const signIdentityMessage = async () => {
+        await signMessageAsync()
+    }
 
     return (
         <>
-            <Heading as="h2" size="xl">
-                Identities
-            </Heading>
-
-            <Text pt="2" fontSize="md">
-                Users interact with the protocol using a Semaphore{" "}
-                <Link href="https://semaphore.appliedzkp.org/docs/guides/identities" color="primary.500" isExternal>
-                    identity
-                </Link>{" "}
-                (similar to Ethereum accounts). It contains three values:
+            <Text align='center' as="b" fontSize="5xl">
+                Identity
             </Text>
-            <OrderedList pl="20px" pt="5px" spacing="3">
-                <ListItem>Trapdoor: private, known only by user</ListItem>
-                <ListItem>Nullifier: private, known only by user</ListItem>
-                <ListItem>Commitment: public</ListItem>
-            </OrderedList>
 
+            <Text align='center' pt="2" fontSize="md">
+                In order to generate a new Identity you will need to sign a message
+            </Text>
             <Divider pt="5" borderColor="gray.500" />
 
             <HStack pt="5" justify="space-between">
                 <Text fontWeight="bold" fontSize="lg">
                     Identity
                 </Text>
-                {_identity && (
-                    <Button leftIcon={<IconRefreshLine />} variant="link" color="text.700" onClick={createIdentity}>
-                        New
-                    </Button>
-                )}
             </HStack>
 
             {_identity ? (
@@ -84,17 +90,30 @@ export default function IdentitiesPage() {
                 </Box>
             ) : (
                 <Box py="6">
-                    <Button
-                        w="100%"
-                        fontWeight="bold"
-                        justifyContent="left"
-                        colorScheme="primary"
-                        px="4"
-                        onClick={createIdentity}
-                        leftIcon={<IconAddCircleFill />}
-                    >
-                        Create identity
-                    </Button>
+                    {isConnected ? (
+                        <Button
+                            w="100%"
+                            fontWeight="bold"
+                            justifyContent="center"
+                            colorScheme="primary"
+                            px="4"
+                            onClick={signIdentityMessage}
+                        >
+                            Create identity
+                        </Button>
+                    ) : (
+                        <Button
+                            w="100%"
+                            fontWeight="bold"
+                            justifyContent="center"
+                            colorScheme="yellow"
+                            px="4"
+                            onClick={connect}
+                        >
+                            Connect Wallet
+                        </Button>
+                    )}
+
                 </Box>
             )}
 

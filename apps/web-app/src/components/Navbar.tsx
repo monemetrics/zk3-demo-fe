@@ -6,7 +6,7 @@ export default function Navbar() {
         <>
             <Flex minWidth='max-content' alignItems='center' gap='2' bgColor='#0068e6'>
                 <Box p='2'>
-                    1
+                    logo
                 </Box>
                 <Spacer />
                 <Box p='2'>

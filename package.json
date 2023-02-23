@@ -1,41 +1,35 @@
 {
-    "name": "semaphore-boilerplate",
-    "description": "A simple DApp to use as a starting point for your project.",
-    "license": "MIT",
-    "repository": "git@github.com:semaphore-protocol/boilerplate.git",
-    "homepage": "https://github.com/semaphore-protocol/boilerplate",
-    "bugs": "https://github.com/semaphore-protocol/boilerplate/issues",
-    "private": true,
-    "scripts": {
-        "start": "yarn workspace web-app dev",
-        "lint": "eslint . --ext .js,.ts",
-        "prettier": "prettier -c .",
-        "prettier:write": "prettier -w .",
-        "copy:contract-artifacts": "ts-node scripts/copy-contract-artifacts.ts"
-    },
-    "keywords": [
-        "javascript",
-        "typescript",
-        "monorepo",
-        "zero-knowledge",
-        "semaphore",
-        "boilerplate"
-    ],
-    "workspaces": [
-        "apps/*"
-    ],
-    "packageManager": "yarn@3.2.1",
-    "devDependencies": {
-        "@types/node": "^17.0.9",
-        "@typescript-eslint/eslint-plugin": "^5.9.1",
-        "@typescript-eslint/parser": "^5.9.1",
-        "eslint": "^8.2.0",
-        "eslint-config-airbnb-base": "15.0.0",
-        "eslint-config-airbnb-typescript": "^16.1.0",
-        "eslint-config-prettier": "^8.3.0",
-        "eslint-plugin-import": "^2.25.2",
-        "prettier": "^2.5.1",
-        "ts-node": "^10.8.1",
-        "typescript": "^4.7.3"
-    }
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start"
+  },
+  "dependencies": {
+    "@apollo/client": "^3.7.9",
+    "@chakra-ui/react": "^2.4.9",
+    "@chakra-ui/theme": "^2.2.5",
+    "@chakra-ui/theme-tools": "^2.0.17",
+    "@emotion/react": "^11.10.5",
+    "@emotion/styled": "^11.10.5",
+    "@semaphore-protocol/group": "^3.0.0",
+    "@semaphore-protocol/identity": "^3.0.0",
+    "@semaphore-protocol/proof": "^3.0.0",
+    "ethers": "^5.7.2",
+    "framer-motion": "^9.0.1",
+    "graphql": "^16.6.0",
+    "next": "latest",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "wagmi": "^0.11.4"
+  },
+  "devDependencies": {
+    "@types/node": "18.11.3",
+    "@types/react": "18.0.21",
+    "@types/react-dom": "18.0.6",
+    "autoprefixer": "^10.4.12",
+    "postcss": "^8.4.18",
+    "tailwindcss": "^3.2.4",
+    "typescript": "4.9.4"
+  }
 }

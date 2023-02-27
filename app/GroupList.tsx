@@ -2,6 +2,7 @@ import React from 'react'
 import { Flex, Card, CardHeader, CardBody, Text } from "@chakra-ui/react"
 import { useQuery, gql } from '@apollo/client';
 import PrimaryCard from './PrimaryCard';
+import Link from 'next/link';
 
 function GroupList() {
     const GET_CIRCLES = gql`
@@ -28,7 +29,9 @@ function GroupList() {
                         <PrimaryCard name={entry.name} text={entry.description} />)
 
                 }) : (() => { return <PrimaryCard name='Loading' text='Loading groups...' /> })}
-                <PrimaryCard name='New Group' text='Add a new group' />
+                <Link href='/newgroup'>
+                    <PrimaryCard name='New Group' text='Add a new group' />
+                </Link>
             </Flex>
         </>
     )

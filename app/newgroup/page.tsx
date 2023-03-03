@@ -3,6 +3,7 @@
 import { Divider, Flex, Text, Spacer, Button } from "@chakra-ui/react"
 import { Identity } from '@semaphore-protocol/identity'
 import { useState, useRef, useCallback, useEffect, useContext } from 'react'
+import Link from "next/link"
 import { useAccount, useSignMessage } from 'wagmi'
 import { verifyMessage } from 'ethers/lib/utils'
 import IdBar from "../IdBar"
@@ -86,6 +87,7 @@ In our case, we will be using Groups to represent connections with web2.0 Auth p
                     </Button>
                 )}
             </Flex>
+            <Link href='/' style={{marginTop: '2px'}}>Back</Link>
             <Divider pt="5" borderColor="gray.500" />
         </>
     )

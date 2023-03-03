@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { ChakraProvider, Container, Stack, HStack, Text, Spinner } from '@chakra-ui/react'
 import { WagmiConfig, createClient, useAccount, useConnect, useDisconnect, useEnsName } from 'wagmi'
-import { ApolloClient, InMemoryCache, ApolloProvider, gql } from '@apollo/client';
+import { ApolloClient, InMemoryCache, ApolloProvider, HttpLink, ApolloLink } from '@apollo/client';
 import { getDefaultProvider } from 'ethers'
 import Navbar from './Navbar'
 import theme from "../styles/index"
@@ -15,9 +15,21 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
 
+  const zk3Link = new HttpLink({
+    uri: 'https://dev.zk3.io/',
+  });
+
+  const lensLink = new HttpLink({
+    uri: 'https://api.lens.dev',
+  });
+
   const apolloClient = new ApolloClient({
 
-    uri: 'https://dev.zk3.io/',
+    link: ApolloLink.split(
+    (operation) => operation.getContext().apolloClientName === "lens",
+    lensLink,
+    zk3Link
+    ),
 
     cache: new InMemoryCache(),
 

@@ -8,11 +8,11 @@ import { verifyMessage } from 'ethers/lib/utils'
 import IdBar from "./IdBar"
 import GroupList from "./GroupList"
 import LogsContext from "../context/LogsContext"
-import { getAuthenticationToken, setAuthenticationToken } from './state';
+import ZK3Context from "../context/ZK3Context"
 
 function IdentityPage() {
     const { setLogs } = useContext(LogsContext)
-    const [_identity, setIdentity] = useState<Identity>()
+    const { _lensAuthToken, _identity, setIdentity } = useContext(ZK3Context)
     const { address, isConnected } = useAccount()
     const recoveredAddress = useRef<string>()
 
@@ -20,7 +20,7 @@ function IdentityPage() {
         console.log(signature)
         const identity = new Identity(signature)
 
-        setIdentity(identity)
+        setIdentity(identity.getCommitment().toString())
 
         localStorage.setItem("identity", identity.getCommitment().toString())
 
@@ -37,20 +37,6 @@ function IdentityPage() {
         },
     })
 
-    useEffect(() => {
-        const identityString = localStorage.getItem("identity")
-
-        if (identityString) {
-            const identity = new Identity(identityString)
-
-            setIdentity(identity)
-
-            setLogs("Your Semaphore identity was retrieved from the browser cache 👌🏽")
-        } else {
-            setLogs("Create your Semaphore identity 👆🏽")
-        }
-    }, [])
-
     const signIdentityMessage = async () => {
         await signMessageAsync()
     }
@@ -65,14 +51,13 @@ function IdentityPage() {
             <Text align='center' pt="2" fontSize="md">
                 {_identity ? 'Identity successfully connected!' : 'In order to generate a new Identity you will need to sign a message'}
             </Text>
-            <Text mb='40px'>{getAuthenticationToken()}</Text>
             <Spacer />
             {_identity && <Text align='center' pt="2" fontSize="lg" fontWeight='bold'> My groups:</Text>}
             <Divider pt="5" borderColor="gray.500" />
             <Flex flexDirection='column' p="6" alignItems='center'>
                 <Spacer />
 
-                {(isConnected && _identity) ? (
+                {(_identity) ? (
                     <GroupList></GroupList>
                 ) : (
                     <Button

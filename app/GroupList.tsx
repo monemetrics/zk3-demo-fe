@@ -1,4 +1,6 @@
 import React from 'react'
+import { useContext, useEffect, useState } from 'react';
+import ZK3Context from '../context/ZK3Context';
 import { Flex, Card, CardHeader, CardBody, Text } from "@chakra-ui/react"
 import { useQuery, gql } from '@apollo/client';
 import PrimaryCard from './PrimaryCard';
@@ -15,20 +17,31 @@ function GroupList() {
         }
     `;
 
-    const { loading, error, data } = useQuery(GET_CIRCLES);
+    const [groupData, setGroupData] = useState<string[]>([])
+    const { getActiveGroups } = useContext(ZK3Context)
 
-    const handleAddNewGroup = () => {
-        alert('yes')
-    }
+    //const { loading, error, data } = useQuery(GET_CIRCLES);
+
+    useEffect(() => {
+        console.log(getActiveGroups())
+        setGroupData(getActiveGroups())
+    }, [])
 
     return (
         <>
             <Flex flexDirection='column' width='md' gap='2'>
-                {data ? data.circles.map((entry: { name: string, description: string }) => {
+                {groupData.map((entry: string) => {
+                    return (
+                        <Link href={'/' + entry.toLowerCase()}>
+                            <PrimaryCard name={entry} text='View Group' />
+                        </Link>)
+
+                })}
+                {/*data ? data.circles.map((entry: { name: string, description: string }) => {
                     return (
                         <PrimaryCard name={entry.name} text={entry.description} />)
 
-                }) : (() => { return <PrimaryCard name='Loading' text='Loading groups...' /> })}
+                }) : (() => { return <PrimaryCard name='Loading' text='Loading groups...' /> })*/}
                 <Link href='/newgroup'>
                     <PrimaryCard name='New Group' text='Add a new group' />
                 </Link>

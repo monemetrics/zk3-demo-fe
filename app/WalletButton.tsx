@@ -1,5 +1,6 @@
 'use client'
 
+import { useEffect } from 'react'
 import { useAccount, useConnect, useDisconnect, useEnsName } from 'wagmi'
 import { InjectedConnector } from 'wagmi/connectors/injected'
 import { Button } from "@chakra-ui/react"

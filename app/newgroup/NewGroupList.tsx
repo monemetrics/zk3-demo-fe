@@ -1,11 +1,11 @@
 import React from 'react'
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import { useDisclosure } from '@chakra-ui/react';
 import { Flex, Card, CardHeader, CardBody, Text, Button, Box, Center } from "@chakra-ui/react"
 import PrimaryCard from '../PrimaryCard';
 import { useQuery, useMutation, gql } from '@apollo/client';
 import { useAccount, useSignMessage } from 'wagmi'
-import { getAuthenticationToken, setAuthenticationToken } from '../state';
+import ZK3Context from '../../context/ZK3Context';
 import {
     Modal,
     ModalOverlay,
@@ -23,6 +23,7 @@ import discordLogo from '../../public/discord.png'
 import telegramLogo from '../../public/telegram.png'
 import ethereumLogo from '../../public/ethereum.png'
 import githubLogo from '../../public/github.png'
+import LogsContext from "../../context/LogsContext"
 import plusIcon from '../../public/plus.png'
 
 const availableGroupData = [
@@ -50,6 +51,8 @@ const availableGroupData = [
 
 function NewGroupList() {
     const { address } = useAccount()
+    const { setLogs } = useContext(LogsContext)
+    const { setLensAuthToken } = useContext(ZK3Context)
 
     const GET_LENS_CHALLENGE = gql`
         query Challenge {
@@ -80,8 +83,11 @@ function NewGroupList() {
             try {
                 mutateFunction({ variables: { request: { address: address, signature: data } } })
                     .then((response) => {
-                        setAuthenticationToken(response.data.authenticate.accessToken)
+                        setLensAuthToken(response.data.authenticate.accessToken)
+                        localStorage.setItem("lensAuthToken", response.data.authenticate.accessToken)
+                        setLogs('Successfully signed in with Lens!')
                     })
+                onClose()
             }
             catch (error) {
                 console.log(error)

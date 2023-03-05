@@ -33,7 +33,7 @@ function GroupList() {
                 {groupData.map((entry: string) => {
                     return (
                         <Link href={'/' + entry.toLowerCase()}>
-                            <PrimaryCard name={entry} text='View Group' />
+                            <PrimaryCard name={entry} logo={entry} text='View Group' />
                         </Link>)
 
                 })}
@@ -43,7 +43,7 @@ function GroupList() {
 
                 }) : (() => { return <PrimaryCard name='Loading' text='Loading groups...' /> })*/}
                 <Link href='/newgroup'>
-                    <PrimaryCard name='New Group' text='Add a new group' />
+                    <PrimaryCard name='New Group' logo='New Group' text='Add a new group' />
                 </Link>
             </Flex>
         </>

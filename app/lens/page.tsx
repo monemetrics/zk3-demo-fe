@@ -5,11 +5,11 @@ import { useContext } from 'react'
 import Link from "next/link"
 import { useAccount, useSignMessage } from 'wagmi'
 import IdBar from "../IdBar"
+import LensActionList from "./LensActionList"
 import LogsContext from "../../context/LogsContext"
-import NewGroupList from "./NewGroupList"
 import ZK3Context from "../../context/ZK3Context"
 
-function NewGroupPage() {
+function LensGroupPage() {
     const { setLogs } = useContext(LogsContext)
     const { _identity } = useContext(ZK3Context)
     const { address, isConnected } = useAccount()
@@ -17,23 +17,21 @@ function NewGroupPage() {
     return (
         <>
             <Text align='center' as="b" fontSize="5xl">
-                New Group
+                Lens Group
             </Text>
             <IdBar ensName="zk3.eth"></IdBar>
 
             <Text align='center' pt="2" fontSize="md">
-            Semaphore groups are binary incremental Merkle trees in which each leaf represents an Identity commitment for a user. Groups can be abstracted to represent events, polls, or organizations.
-
-In our case, we will be using Groups to represent connections with web2.0 Auth providers.
+            Please select an action to perform in the Lens Group
             </Text>
             <Spacer />
-            {_identity && <Text align='center' pt="2" fontSize="lg" fontWeight='bold'> My groups:</Text>}
+            {_identity && <Text align='center' pt="2" fontSize="lg" fontWeight='bold'> Available Actions:</Text>}
             <Divider pt="5" borderColor="gray.500" />
             <Flex flexDirection='column' p="6" alignItems='center'>
                 <Spacer />
 
                 {(isConnected && _identity) ? (
-                    <NewGroupList />
+                    <LensActionList />
                 ) : (
                     <Text>Loading...</Text>
                 )}
@@ -48,4 +46,4 @@ In our case, we will be using Groups to represent connections with web2.0 Auth p
     )
 }
 
-export default NewGroupPage
+export default LensGroupPage

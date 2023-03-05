@@ -116,7 +116,7 @@ function NewGroupList() {
                         <div onClick={() => {
                             handleAddNewGroup(entry.name)
                         }}>
-                            <PrimaryCard name={entry.name} text={entry.description} />
+                            <PrimaryCard name={entry.name} logo={entry.name} text={entry.description} />
                         </div>)
 
                 })}

@@ -9,7 +9,7 @@ import ethereumLogo from '../public/ethereum.png'
 import githubLogo from '../public/github.png'
 import plusIcon from '../public/plus.png'
 
-export default function PrimaryCard(props: { name: string, text: string, onClick?: object }) {
+export default function PrimaryCard(props: { name: string, text: string, logo: string }) {
     return (
         <Card _hover={{
             background: "white",
@@ -18,7 +18,7 @@ export default function PrimaryCard(props: { name: string, text: string, onClick
         }}>
             <CardBody>
                 <Stack direction='row'>
-                    <Image alt='logo' src={props.name=='Github' ? githubLogo : props.name=='Lens' ? lensLogo : props.name=='Twitter' ? twitterLogo : props.name=='Discord' ? discordLogo : props.name=='Telegram' ? telegramLogo : props.name=='Ethereum' ? ethereumLogo : plusIcon} height={40} width={40} style={{objectFit:'contain', marginRight: '12px', width: 'auto'}}></Image>
+                    <Image alt='logo' src={props.logo=='Github' ? githubLogo : props.logo=='Lens' ? lensLogo : props.logo=='Twitter' ? twitterLogo : props.logo=='Discord' ? discordLogo : props.logo=='Telegram' ? telegramLogo : props.logo=='Ethereum' ? ethereumLogo : plusIcon} height={40} width={40} style={{objectFit:'contain', marginRight: '12px', width: 'auto'}}></Image>
                     <Stack direction='column'>
                         <Text fontWeight='bold'>{props.name}</Text>
                         <Text>{props.text}</Text>

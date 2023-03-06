@@ -6,6 +6,8 @@ import { ChakraProvider, Container, Stack, HStack, Text, Spinner } from '@chakra
 import { WagmiConfig, createClient, useAccount, useConnect, useDisconnect, useEnsName } from 'wagmi'
 import { ApolloClient, InMemoryCache, ApolloProvider, HttpLink, ApolloLink } from '@apollo/client';
 import { getDefaultProvider } from 'ethers'
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ThirdwebProvider, ChainId } from "@thirdweb-dev/react";
 import Navbar from './Navbar'
 import theme from "../styles/index"
 import LogsContext from "../context/LogsContext"
@@ -45,23 +47,23 @@ export default function RootLayout({
 
   useEffect(() => {
     const identityString = localStorage.getItem("identity")
-    const lensAuthToken = localStorage.getItem("lensAuthToken")
+    const lensAuthToken = localStorage.getItem("LH_STORAGE_KEY")
 
     if (lensAuthToken) {
-      setLensAuthToken(lensAuthToken)
+      setLensAuthToken(JSON.parse(lensAuthToken).accessToken)
       console.log('found lens token')
     }
 
     if (identityString) {
-        const identity = new Identity(identityString)
+      const identity = new Identity(identityString)
 
-        setIdentity(identity.getCommitment().toString())
+      setIdentity(identity.getCommitment().toString())
 
-        setLogs("Your Semaphore identity was retrieved from the browser cache 👌🏽")
+      setLogs("Your Semaphore identity was retrieved from the browser cache 👌🏽")
     } else {
-        setLogs("Create your Semaphore identity 👆🏽")
+      setLogs("Create your Semaphore identity 👆🏽")
     }
-}, [])
+  }, [])
 
   const getActiveGroups = () => {
     var groups: string[] = []
@@ -76,6 +78,12 @@ export default function RootLayout({
     autoConnect: true,
     provider: getDefaultProvider(),
   })
+  // the chainId our app wants to be running on
+  // for our example the Polygon Mumbai Testnet
+  const desiredChainId = ChainId.Polygon;
+
+  // Create a client
+  const queryClient = new QueryClient();
 
   return (
     <html>
@@ -83,49 +91,53 @@ export default function RootLayout({
       <body>
         <ApolloProvider client={apolloClient}>
           <WagmiConfig client={client}>
-            <ZK3Context.Provider
-              value={{
-                _identity,
-                _lensAuthToken,
-                _githubAuthToken,
-                _eventbriteAuthToken,
-                setIdentity,
-                setLensAuthToken,
-                setGithubAuthToken,
-                setEventbriteAuthToken,
-                getActiveGroups
-              }}
-              >
-              <ChakraProvider theme={theme}>
-                <LogsContext.Provider
+            <ThirdwebProvider activeChain={desiredChainId}>
+              <QueryClientProvider client={queryClient}>
+                <ZK3Context.Provider
                   value={{
-                    _logs,
-                    setLogs
+                    _identity,
+                    _lensAuthToken,
+                    _githubAuthToken,
+                    _eventbriteAuthToken,
+                    setIdentity,
+                    setLensAuthToken,
+                    setGithubAuthToken,
+                    setEventbriteAuthToken,
+                    getActiveGroups
                   }}
                 >
-                  <Navbar></Navbar>
-                  <Container maxW="lg" flex="1" display="flex" alignItems="center">
-                    <Stack py="8" display="flex" width="100%">
-                      {children}
-                    </Stack>
-                  </Container>
-                  <HStack
-                    style={{ position: 'fixed', bottom: '0px', left: '0px', right: '0px' }}
-                    flexBasis="56px"
-                    borderTop="1px solid #8f9097"
-                    backgroundColor="#DAE0FF"
-                    align="center"
-                    justify="center"
-                    spacing="4"
-                    p="4"
-                  >
-                    {_logs.endsWith("...") && <Spinner color="primary.400" />}
-                    <Text fontWeight="bold">{_logs}</Text>
-                  </HStack>
+                  <ChakraProvider theme={theme}>
+                    <LogsContext.Provider
+                      value={{
+                        _logs,
+                        setLogs
+                      }}
+                    >
+                      <Navbar></Navbar>
+                      <Container maxW="lg" flex="1" display="flex" alignItems="center">
+                        <Stack py="8" display="flex" width="100%">
+                          {children}
+                        </Stack>
+                      </Container>
+                      <HStack
+                        style={{ position: 'fixed', bottom: '0px', left: '0px', right: '0px' }}
+                        flexBasis="56px"
+                        borderTop="1px solid #8f9097"
+                        backgroundColor="#DAE0FF"
+                        align="center"
+                        justify="center"
+                        spacing="4"
+                        p="4"
+                      >
+                        {_logs.endsWith("...") && <Spinner color="primary.400" />}
+                        <Text fontWeight="bold">{_logs}</Text>
+                      </HStack>
 
-                </LogsContext.Provider>
-              </ChakraProvider>
-            </ZK3Context.Provider>
+                    </LogsContext.Provider>
+                  </ChakraProvider>
+                </ZK3Context.Provider>
+              </QueryClientProvider>
+            </ThirdwebProvider>
           </WagmiConfig>
         </ApolloProvider>
       </body>

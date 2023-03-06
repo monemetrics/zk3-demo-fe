@@ -25,6 +25,7 @@ import ethereumLogo from '../../public/ethereum.png'
 import githubLogo from '../../public/github.png'
 import LogsContext from "../../context/LogsContext"
 import plusIcon from '../../public/plus.png'
+import LensSignInButton from './LensSignInButton';
 
 const availableGroupData = [
     {
@@ -130,7 +131,8 @@ function NewGroupList() {
                     <ModalBody>
                         <Text>Please login to {activeModalName} in order to join the group:</Text>
                         <br />
-                        <Box onClick={signChallengeMessage} position='relative' p='4' borderWidth='1px' borderRadius='lg' maxW='sm' alignSelf='center' py='4' boxShadow='md' maxH='80px' _hover={{
+                        {activeModalName === 'Lens' && <LensSignInButton />}
+                        {activeModalName !== 'Lens' && <Box onClick={signChallengeMessage} position='relative' p='4' borderWidth='1px' borderRadius='lg' maxW='sm' alignSelf='center' py='4' boxShadow='md' maxH='80px' _hover={{
                             background: "white",
                             color: "blue.500",
                             cursor: "pointer"
@@ -141,7 +143,7 @@ function NewGroupList() {
                                 </Center>
                                 Continue with {activeModalName}
                             </Button>
-                        </Box>
+                        </Box>}
                     </ModalBody>
                 </ModalContent>
             </Modal>

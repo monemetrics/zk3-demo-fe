@@ -11,7 +11,7 @@ function IdBar(props: { ensName: string }) {
         <>
             <Box p='2' borderWidth='1px' borderRadius='lg' maxW='sm' alignSelf='center' px='28' boxShadow='md'>
                 <Text align='center' fontWeight='bold' fontSize='28' textColor='blue.500'>
-                    {ensName? ensName : props.ensName}
+                    {ensName? ensName : 'no ENS name found'}
                 </Text>
             </Box>
         </>

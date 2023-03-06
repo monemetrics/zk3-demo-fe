@@ -1,7 +1,10 @@
 import { Flex, Box, Spacer, Heading } from "@chakra-ui/react"
+import { useState, useEffect } from "react"
 import WalletButton from "./WalletButton"
 import Image from 'next/image'
 import zk3Logo from '../public/zk3.png'
+import LensSignInButton from "./newgroup/LensSignInButton"
+import useLensUser from "../lib/auth/useLensUser";
 
 export default function Navbar() {
     return (
@@ -11,12 +14,12 @@ export default function Navbar() {
                     <Image alt='zk3 Logo' src={zk3Logo} height={60} width={60} style={{objectFit:'contain', marginRight: '80px'}}></Image>
                 </Box>
                 <Spacer />
-                <Box p='2'>
+                <Box p='2' sx={{position: 'absolute', width: '180px', marginLeft: 'auto', marginRight: 'auto', left: 0, right: 0}}>
                     <Heading size='lg' color={"whiteAlpha.900"} >ZK3 demo</Heading>
                 </Box>
                 <Spacer />
                 <Box p='2'>
-                    <WalletButton></WalletButton>
+                    <LensSignInButton></LensSignInButton>
                 </Box>
             </Flex>
         </>

@@ -18,6 +18,7 @@ import {
     FormHelperText,
     Textarea,
 } from '@chakra-ui/react'
+import CreatePost from './CreatePost';
 import { Input } from '@chakra-ui/react';
 import PrimaryCard from '../PrimaryCard';
 import { useDisclosure } from '@chakra-ui/react';
@@ -28,7 +29,7 @@ function LensActionList() {
 
     const handlePostSubmission = (e: any) => {
         e.preventDefault()
-        console.log(new FormData(e.target))
+        //console.log(new FormData(e.target))
     }
 
     return (
@@ -44,37 +45,7 @@ function LensActionList() {
                     <ModalHeader>Create a ZK3 Lens Post</ModalHeader>
                     <ModalCloseButton />
                     <ModalBody>
-                        <form onSubmit={handlePostSubmission}>
-                            <FormControl isRequired>
-                                <FormLabel>Post Body:</FormLabel>
-                                <Textarea name='postBody' />
-                            </FormControl>
-                            <Divider my='12px' />
-                            <FormControl>
-                                <FormLabel>Post type:</FormLabel>
-                                <RadioGroup name='type' defaultValue='Post'>
-                                    <HStack spacing='24px'>
-                                        <Radio value='Post'>Post</Radio>
-                                        <Radio value='Comment' isDisabled={true}>Comment</Radio>
-                                    </HStack>
-                                </RadioGroup>
-                            </FormControl>
-                            <Divider my='12px' />
-                            <FormControl>
-                                <FormLabel>Embedded ZK3 Proof:</FormLabel>
-                                <Select name='proof' placeholder='No Proof selected'>
-                                    <option>proof 1</option>
-                                </Select>
-                            </FormControl>
-                            <Button
-                                mt={4}
-                                colorScheme='blue'
-                                type='submit'
-                                variant='solid'
-                            >
-                                Post
-                            </Button>
-                        </form>
+                        <CreatePost />
                     </ModalBody>
                 </ModalContent>
             </Modal>

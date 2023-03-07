@@ -3,7 +3,7 @@
 import { Divider, Flex, Text, Spacer, Button } from "@chakra-ui/react"
 import { useContext } from 'react'
 import Link from "next/link"
-import { useAccount, useSignMessage } from 'wagmi'
+import { useAddress } from "@thirdweb-dev/react";
 import IdBar from "../IdBar"
 import LensActionList from "./LensActionList"
 import LogsContext from "../../context/LogsContext"
@@ -12,7 +12,7 @@ import ZK3Context from "../../context/ZK3Context"
 function LensGroupPage() {
     const { setLogs } = useContext(LogsContext)
     const { _identity } = useContext(ZK3Context)
-    const { address, isConnected } = useAccount()
+    const address = useAddress();
 
     return (
         <>
@@ -30,7 +30,7 @@ function LensGroupPage() {
             <Flex flexDirection='column' p="6" alignItems='center'>
                 <Spacer />
 
-                {(isConnected && _identity) ? (
+                {(address && _identity) ? (
                     <LensActionList />
                 ) : (
                     <Text>Loading...</Text>

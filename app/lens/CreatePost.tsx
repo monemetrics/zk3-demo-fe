@@ -81,7 +81,7 @@ export default function CreatePost() {
                     contractAddress={LENS_CONTRACT_ADDRESS}
                     contractAbi={LENS_CONTRACT_ABI}
                     action={async () => {
-                        if (!image) return;
+                        //if (!image) return;
 
                         return await createPost({
                             image,

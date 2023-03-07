@@ -11,7 +11,7 @@ import { LENS_CONTRACT_ABI, LENS_CONTRACT_ADDRESS } from "../const/contracts";
 import useLogin from "./auth/useLogin";
 
 type CreatePostArgs = {
-  image: File;
+  image: File | null;
   title: string;
   description: string;
   content: string;

@@ -80,7 +80,7 @@ function NewGroupList() {
     const { signMessageAsync } = useSignMessage({
         message: challengeData?.challenge.text,
         onSuccess(data) {
-            console.log(data)
+            //console.log(data)
             try {
                 mutateFunction({ variables: { request: { address: address, signature: data } } })
                     .then((response) => {

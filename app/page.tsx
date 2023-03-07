@@ -5,6 +5,7 @@ import { Identity } from '@semaphore-protocol/identity'
 import { useState, useRef, useCallback, useEffect, useContext } from 'react'
 import { useAccount, useSignMessage } from 'wagmi'
 import { verifyMessage } from 'ethers/lib/utils'
+import { useAddress, useSDK } from "@thirdweb-dev/react";
 import IdBar from "./IdBar"
 import GroupList from "./GroupList"
 import LogsContext from "../context/LogsContext"
@@ -13,11 +14,12 @@ import ZK3Context from "../context/ZK3Context"
 function IdentityPage() {
     const { setLogs } = useContext(LogsContext)
     const { _lensAuthToken, _identity, setIdentity } = useContext(ZK3Context)
-    const { address, isConnected } = useAccount()
-    const recoveredAddress = useRef<string>()
+    const address = useAddress();
+    const sdk = useSDK()
+    const [ _signature, setSignature ] = useState('')
 
     const createIdentity = useCallback(async (signature: any) => {
-        console.log(signature)
+        //console.log(signature)
         const identity = new Identity(signature)
 
         setIdentity(identity.getCommitment().toString())
@@ -28,17 +30,13 @@ function IdentityPage() {
         setLogs("Your new Semaphore identity was just created 🎉")
     }, [])
 
-    const { signMessageAsync } = useSignMessage({
-        message: 'gm zk3 frens', // <- changing the signing message destroys the link between all users and their existing identities
-        onSuccess(data, variables) {
-            // Verify signature when sign message succeeds
-            recoveredAddress.current = verifyMessage(variables.message, data)
-            createIdentity(data)
-        },
-    })
-
     const signIdentityMessage = async () => {
-        await signMessageAsync()
+        //console.log('attempt sign')
+        const signature = await sdk?.wallet.sign('gm zk3 frens')
+        if (!signature)
+            throw new Error('No signature!')
+        setSignature(signature)
+        createIdentity(signature)
     }
 
     return (
@@ -65,8 +63,8 @@ function IdentityPage() {
                         justifyContent="center"
                         colorScheme="primary"
                         px="4"
-                        onClick={isConnected ? signIdentityMessage : () => { }}>
-                        {isConnected ? 'Generate Identity' : 'Please Connect your wallet'}
+                        onClick={address ? signIdentityMessage : () => { }}>
+                        {address ? 'Generate Identity' : 'Please Connect your wallet'}
                     </Button>
                 )}
             </Flex>

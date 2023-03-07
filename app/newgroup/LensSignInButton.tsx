@@ -1,5 +1,3 @@
-'use client'
-
 import {
     useAddress,
     useNetworkMismatch,
@@ -11,7 +9,7 @@ import {
   import React from "react";
   import useLensUser from "../../lib/auth/useLensUser";
   import useLogin from "../../lib/auth/useLogin";
-  import { Button } from "@chakra-ui/react";
+  import { Button, HStack, Text } from "@chakra-ui/react";
   type Props = {};
   
   export default function LensSignInButton({}: Props) {
@@ -58,7 +56,8 @@ import {
     // If it's done loading and there's a default profile
     if (profileQuery.data?.defaultProfile) {
       return (
-        <div>
+        <HStack>
+            <Text color='white'>{profileQuery.data?.defaultProfile.handle}</Text>
           <MediaRenderer
             // @ts-ignore
             src={profileQuery?.data?.defaultProfile?.picture?.original?.url || ""}
@@ -69,7 +68,7 @@ import {
               borderRadius: "50%",
             }}
           />
-        </div>
+        </HStack>
       );
     }
   

@@ -23,7 +23,7 @@ function GroupList() {
     //const { loading, error, data } = useQuery(GET_CIRCLES);
 
     useEffect(() => {
-        console.log(getActiveGroups())
+        //console.log(getActiveGroups())
         setGroupData(getActiveGroups())
     }, [])
 
@@ -32,7 +32,7 @@ function GroupList() {
             <Flex flexDirection='column' width='md' gap='2'>
                 {groupData.map((entry: string) => {
                     return (
-                        <Link href={'/' + entry.toLowerCase()}>
+                        <Link key={entry} href={'/' + entry.toLowerCase()}>
                             <PrimaryCard name={entry} logo={entry} text='View Group' />
                         </Link>)
 

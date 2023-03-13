@@ -8,7 +8,7 @@ export async function createBalanceOfProofTypedData(
     const domain = {
         name: "Zk3 Verify",
         version: "1",
-        chainId: 137,
+        chainId: 80001,
         verifyingContract: "0xCcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC"
     }
 

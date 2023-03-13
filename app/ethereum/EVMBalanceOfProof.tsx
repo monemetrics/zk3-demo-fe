@@ -35,7 +35,7 @@ import { useQuery, useMutation, gql } from '@apollo/client';
 function EVMBalanceOfProof() {
     const { data: ethBalanceData, isLoading } = useBalance(NATIVE_TOKEN_ADDRESS);
     const { isOpen, onOpen, onClose } = useDisclosure()
-    const [balanceOfValue, setBalanceOfValue] = useState<number>(10)
+    const [balanceOfValue, setBalanceOfValue] = useState<number>(1)
     const [selectedSymbol, setSelectedSymbol] = useState('MATIC')
     const { _identity } = useContext(ZK3Context)
     const address = useAddress()

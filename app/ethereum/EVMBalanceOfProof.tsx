@@ -25,11 +25,12 @@ import {
 import PrimaryCard from '../PrimaryCard';
 import { useDisclosure } from '@chakra-ui/react';
 import { useBalance, useSDK, useAddress } from "@thirdweb-dev/react";
-import { NATIVE_TOKEN_ADDRESS } from "@thirdweb-dev/sdk";
+import { ChainId, NATIVE_TOKEN_ADDRESS } from "@thirdweb-dev/sdk";
 import { createBalanceOfProofTypedData } from '../../lib/ZK3helpers';
 import ZK3Context from "../../context/ZK3Context"
 import { BigNumber } from 'ethers';
 import { Identity } from '@semaphore-protocol/identity';
+import { useQuery, useMutation, gql } from '@apollo/client';
 
 function EVMBalanceOfProof() {
     const { data: ethBalanceData, isLoading } = useBalance(NATIVE_TOKEN_ADDRESS);
@@ -39,6 +40,23 @@ function EVMBalanceOfProof() {
     const { _identity } = useContext(ZK3Context)
     const address = useAddress()
     const sdk = useSDK()
+    
+    var BALANCE_OF_PROOF = gql`mutation CreateBalanceOfProof(
+        $identityCommitment: String!, 
+        $ethAddress: String!, 
+        $balance: String!, 
+        $signature: String
+        ) {
+            createBalanceOfProof(
+                identityCommitment: $identityCommitment, 
+                ethAddress: $ethAddress, 
+                balance: $balance, 
+                signature: $signature)
+      }`;
+
+    const [mutateFunction, { data: authData }] = useMutation(BALANCE_OF_PROOF, {
+        
+    });
 
     const handleGenerateProof = async (e: any) => {
         // toDo: add erc20 support (currently only native tokens)
@@ -53,6 +71,12 @@ function EVMBalanceOfProof() {
 
         const signature = await sdk?.wallet.signTypedData(typedData.domain, typedData.types, typedData.value)
         console.log(signature)
+
+        mutateFunction({ variables: { identityCommitment: commitment.toString(), ethAddress: address, balance: '1', signature: signature?.signature } })
+                    .then((response) => {
+                        console.log(response)
+                    })
+
     }
 
     return (
@@ -73,14 +97,14 @@ function EVMBalanceOfProof() {
                                 {'Balance: ' + ethBalanceData?.displayValue.split('.')[0] + '.' + ethBalanceData?.displayValue.split('.')[1].substring(0, 5) + ' ' + ethBalanceData?.symbol}
                             </FormLabel>
                             <NumberInput
-                                defaultValue={10}
+                                defaultValue={1}
                                 value={balanceOfValue}
                                 onChange={(e) => { setBalanceOfValue(Number(e)) }}
                                 min={0}
                                 max={Number(ethBalanceData?.displayValue)}
                                 keepWithinRange={true}
                                 precision={0}
-                                step={10}
+                                step={1}
                                 clampValueOnBlur={true}
                             >
                                 <NumberInputField />
@@ -95,7 +119,7 @@ function EVMBalanceOfProof() {
                         </FormControl>
                     </ModalBody>
                     <ModalFooter>
-                        <Button onClick={handleGenerateProof} variant='solid' bgColor='#002add' color='#fff' colorScheme='blue'>Generate Proof</Button>
+                        <Button onClick={handleGenerateProof} width='100%' variant='solid' bgColor='#002add' color='#fff' colorScheme='blue'>Generate Proof</Button>
                     </ModalFooter>
                 </ModalContent>
             </Modal>

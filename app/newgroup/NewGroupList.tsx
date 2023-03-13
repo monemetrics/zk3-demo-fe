@@ -40,14 +40,6 @@ const availableGroupData = [
         name: 'Discord',
         description: 'Connect with Discord'
     },
-    {
-        name: 'Ethereum',
-        description: 'Connect with EVM Wallet'
-    },
-    {
-        name: 'Lens',
-        description: 'Connect with Lens'
-    },
 ]
 
 function NewGroupList() {

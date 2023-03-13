@@ -3,7 +3,7 @@
 import { Divider, Flex, Text, Spacer, Button } from "@chakra-ui/react"
 import { useContext } from 'react'
 import Link from "next/link"
-import { useAccount, useSignMessage } from 'wagmi'
+import { useAddress } from "@thirdweb-dev/react"
 import IdBar from "../IdBar"
 import LogsContext from "../../context/LogsContext"
 import NewGroupList from "./NewGroupList"
@@ -12,7 +12,7 @@ import ZK3Context from "../../context/ZK3Context"
 function NewGroupPage() {
     const { setLogs } = useContext(LogsContext)
     const { _identity } = useContext(ZK3Context)
-    const { address, isConnected } = useAccount()
+    const address = useAddress()
 
     return (
         <>
@@ -32,7 +32,7 @@ In our case, we will be using Groups to represent connections with web2.0 Auth p
             <Flex flexDirection='column' p="6" alignItems='center'>
                 <Spacer />
 
-                {(isConnected && _identity) ? (
+                {(address && _identity) ? (
                     <NewGroupList />
                 ) : (
                     <Text>Loading...</Text>

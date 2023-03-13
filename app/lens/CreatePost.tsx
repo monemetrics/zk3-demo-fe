@@ -2,7 +2,7 @@ import { Web3Button } from "@thirdweb-dev/react";
 import React, { useState } from "react";
 import { LENS_CONTRACT_ABI, LENS_CONTRACT_ADDRESS } from "../../const/contracts";
 import { useCreatePost } from "../../lib/useCreatePost";
-import { Input, Textarea, Select, Radio, RadioGroup, HStack, FormLabel } from "@chakra-ui/react";
+import { Input, Textarea, Select, Radio, RadioGroup, HStack, FormLabel, Box } from "@chakra-ui/react";
 
 export default function CreatePost() {
     const [image, setImage] = useState<File | null>(null);
@@ -19,10 +19,10 @@ export default function CreatePost() {
     });
 
     return (
-        <div>
-            <div>
+        <Box>
+            <Box>
                 {/* Input for the image */}
-                <div>
+                {/*<Box>
                     <Input
                         type="file"
                         onChange={(e) => {
@@ -31,53 +31,54 @@ export default function CreatePost() {
                             }
                         }}
                     />
-                </div>
+                    </Box>*/}
 
                 {/* Input for the title */}
-                <div>
+                <Box mb={2}>
                     <Input
                         type="text"
                         placeholder="Title"
                         onChange={(e) => setTitle(e.target.value)}
                     />
-                </div>
+                </Box>
 
                 {/* Description */}
-                <div>
+                <Box mb={2}>
                     <Textarea
                         placeholder="Description"
                         onChange={(e) => setDescription(e.target.value)}
                     />
-                </div>
+                </Box>
 
                 {/* Content */}
-                <div>
+                <Box mb={2}>
                     <Textarea
                         placeholder="Content"
                         onChange={(e) => setContent(e.target.value)}
                     />
-                </div>
+                </Box>
 
                 {/* Post or Comment */}
 
-                <div>
+                {/*<Box>
                     <RadioGroup name='type' defaultValue='Post'>
                         <HStack spacing='24px'>
                             <Radio value='Post'>Post</Radio>
                             <Radio value='Comment' isDisabled={true}>Comment</Radio>
                         </HStack>
                     </RadioGroup>
-                </div>
+                    </Box>*/}
 
                 {/* Attached Proof */}
 
-                <div>
+                <Box mb={2}>
                     <Select name='proof' placeholder='No Proof selected'>
                         <option>proof 1</option>
                     </Select>
-                </div>
+                </Box>
 
                 <Web3Button
+                    accentColor="#002add"
                     contractAddress={LENS_CONTRACT_ADDRESS}
                     contractAbi={LENS_CONTRACT_ABI}
                     action={async () => {
@@ -93,7 +94,7 @@ export default function CreatePost() {
                 >
                     Create Post
                 </Web3Button>
-            </div>
-        </div>
+            </Box>
+        </Box>
     );
 }

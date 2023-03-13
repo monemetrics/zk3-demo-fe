@@ -12,6 +12,8 @@ function EthereumGroupPage() {
     const { _identity } = useContext(ZK3Context)
     const address = useAddress();
 
+    console.log(address, _identity)
+
     return (
         <>
             <Text align='center' as="b" fontSize="5xl">

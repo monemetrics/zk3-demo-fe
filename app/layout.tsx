@@ -19,7 +19,7 @@ export default function RootLayout({
 }) {
 
   const zk3Link = new HttpLink({
-    uri: 'https://dev.zk3.io/',
+    uri: 'https://dev.zk3.io/graphql',
   });
 
   const lensLink = new HttpLink({
@@ -91,7 +91,7 @@ export default function RootLayout({
   })
   // the chainId our app wants to be running on
   // for our example the Polygon Mumbai Testnet
-  const desiredChainId = ChainId.Polygon;
+  const desiredChainId = ChainId.Mumbai;
 
   // Create a client
   const queryClient = new QueryClient();
@@ -101,7 +101,7 @@ export default function RootLayout({
       <head />
       <body>
         <ApolloProvider client={apolloClient}>
-          <WagmiConfig client={client}>
+          {/*<WagmiConfig client={client}>*/}
             <ThirdwebProvider activeChain={desiredChainId}>
               <QueryClientProvider client={queryClient}>
                 <ZK3Context.Provider
@@ -144,7 +144,7 @@ export default function RootLayout({
                 </ZK3Context.Provider>
               </QueryClientProvider>
             </ThirdwebProvider>
-          </WagmiConfig>
+          {/*</WagmiConfig>*/}
         </ApolloProvider>
       </body>
     </html>

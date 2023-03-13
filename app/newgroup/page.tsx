@@ -38,12 +38,12 @@ In our case, we will be using Groups to represent connections with web2.0 Auth p
                     <Text>Loading...</Text>
                 )}
             </Flex>
+            <Divider pt="5" borderColor="gray.500" />
             <Link href='/' style={{marginTop: '2px'}}>
-                <Button variant='solid' colorScheme='blue'>
+                <Button variant='solid' colorScheme='blue' color='#fff' bgColor='#002add'>
                 Back
                 </Button>
             </Link>
-            <Divider pt="5" borderColor="gray.500" />
         </>
     )
 }

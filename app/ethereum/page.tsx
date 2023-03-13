@@ -5,24 +5,22 @@ import { useContext } from 'react'
 import Link from "next/link"
 import { useAddress } from "@thirdweb-dev/react";
 import IdBar from "../IdBar"
-import LensActionList from "./LensActionList"
-import LogsContext from "../../context/LogsContext"
+import EthActionList from './EthActionList'
 import ZK3Context from "../../context/ZK3Context"
 
-function LensGroupPage() {
-    const { setLogs } = useContext(LogsContext)
+function EthereumGroupPage() {
     const { _identity } = useContext(ZK3Context)
     const address = useAddress();
 
     return (
         <>
             <Text align='center' as="b" fontSize="5xl">
-                Lens Group
+                EVM Group
             </Text>
             <IdBar ensName="zk3.eth"></IdBar>
 
             <Text align='center' pt="2" fontSize="md">
-            Please select an action to perform in the Lens Group
+            Please select an action to perform in the EVM Group
             </Text>
             <Spacer />
             {_identity && <Text align='center' pt="2" fontSize="lg" fontWeight='bold'> Available Actions:</Text>}
@@ -31,7 +29,7 @@ function LensGroupPage() {
                 <Spacer />
 
                 {(address && _identity) ? (
-                    <LensActionList />
+                    <EthActionList />
                 ) : (
                     <Text>Loading...</Text>
                 )}
@@ -46,4 +44,4 @@ function LensGroupPage() {
     )
 }
 
-export default LensGroupPage
+export default EthereumGroupPage

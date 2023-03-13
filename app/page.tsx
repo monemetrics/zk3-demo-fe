@@ -1,6 +1,6 @@
 'use client'
 
-import { Divider, Flex, Text, Spacer, Button } from "@chakra-ui/react"
+import { Divider, Flex, Text, Spacer, Button, useToast } from "@chakra-ui/react"
 import { Identity } from '@semaphore-protocol/identity'
 import { useState, useRef, useCallback, useEffect, useContext } from 'react'
 import { useAccount, useSignMessage } from 'wagmi'
@@ -12,6 +12,7 @@ import LogsContext from "../context/LogsContext"
 import ZK3Context from "../context/ZK3Context"
 
 function IdentityPage() {
+    const toast = useToast()
     const { setLogs } = useContext(LogsContext)
     const { _lensAuthToken, _identity, setIdentity } = useContext(ZK3Context)
     const address = useAddress();
@@ -19,15 +20,22 @@ function IdentityPage() {
     const [ _signature, setSignature ] = useState('')
 
     const createIdentity = useCallback(async (signature: any) => {
-        //console.log(signature)
+        console.log(signature)
         const identity = new Identity(signature)
 
-        setIdentity(identity.getCommitment().toString())
+        setIdentity(identity)
 
-        localStorage.setItem("identity", identity.getCommitment().toString())
+        localStorage.setItem("identity", identity.toString())
 
 
-        setLogs("Your new Semaphore identity was just created 🎉")
+        //setLogs("Your new Semaphore identity was just created 🎉")
+        toast({
+            title: 'Identity Created!',
+            description: 'Your new Semaphore identity was just created 🎉',
+            status: 'success',
+            duration: 5000,
+            isClosable: true,
+        })
     }, [])
 
     const signIdentityMessage = async () => {

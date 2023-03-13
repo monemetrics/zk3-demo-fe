@@ -5,7 +5,7 @@ const styles: Styles = {
     global: (): SystemStyleObject => ({
         body: {
             bg: "white",
-            color: "text.700"
+            color: "#151c2b"
         },
         "body, #__next": {
             minHeight: "100vh"

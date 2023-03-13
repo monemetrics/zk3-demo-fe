@@ -9,7 +9,7 @@ function IdBar(props: { ensName: string }) {
     return (
         <>
             <Box p='2' borderWidth='1px' borderRadius='lg' maxW='sm' alignSelf='center' px='28' boxShadow='md'>
-                <Text align='center' fontWeight='bold' fontSize='28' textColor='blue.500'>
+                <Text align='center' fontWeight='bold' fontSize='28' textColor='#002add'>
                     {isSignedInQuery && profileQuery?.data?.defaultProfile?.name}
                 </Text>
             </Box>

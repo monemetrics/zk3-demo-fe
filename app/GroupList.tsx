@@ -24,7 +24,7 @@ function GroupList() {
 
     useEffect(() => {
         //console.log(getActiveGroups())
-        setGroupData(getActiveGroups())
+        setGroupData(getActiveGroups().concat(['Ethereum']))
     }, [])
 
     return (

@@ -1,7 +1,7 @@
 import React from 'react'
 import { useState, useContext } from 'react';
 import { useDisclosure } from '@chakra-ui/react';
-import { Flex, Card, CardHeader, CardBody, Text, Button, Box, Center } from "@chakra-ui/react"
+import { Flex, Card, CardHeader, CardBody, Text, Button, Box, Center, useToast } from "@chakra-ui/react"
 import PrimaryCard from '../PrimaryCard';
 import { useQuery, useMutation, gql } from '@apollo/client';
 import { useAccount, useSignMessage } from 'wagmi'

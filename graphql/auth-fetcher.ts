@@ -30,19 +30,19 @@ export const fetcher = <TData, TVariables>(
   return async () => {
     const token = typeof window !== "undefined" ? await getAccessToken() : null;
 
-    const res = await fetch("https://api.lens.dev/", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        ...options,
-        "x-access-token": token ? token : "",
-        "Access-Control-Allow-Origin": "*",
-      },
-      body: JSON.stringify({
-        query,
-        variables,
-      }),
-    });
+    const res = await fetch("https://api-mumbai.lens.dev/", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            ...options,
+            "x-access-token": token ? token : "",
+            "Access-Control-Allow-Origin": "*"
+        },
+        body: JSON.stringify({
+            query,
+            variables
+        })
+    })
 
     const json = await res.json();
 

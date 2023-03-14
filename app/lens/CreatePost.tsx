@@ -1,5 +1,5 @@
 import { Web3Button } from "@thirdweb-dev/react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { LENS_CONTRACT_ABI, LENS_CONTRACT_ADDRESS } from "../../const/contracts";
 import { useCreatePost } from "../../lib/useCreatePost";
 import { Input, Textarea, Select, Radio, RadioGroup, HStack, FormLabel, Box } from "@chakra-ui/react";
@@ -10,13 +10,23 @@ export default function CreatePost() {
     const [description, setDescription] = useState<string>("");
     const [content, setContent] = useState<string>("");
     const { mutateAsync: createPost } = useCreatePost();
+    const [ proofs, setProofs ] = useState([])
 
-    console.log("content:", {
-        image,
-        title,
-        description,
-        content,
-    });
+    useEffect(() => {
+        const myCircleList_string = localStorage.getItem('myCircleList')
+        if (myCircleList_string)
+        {
+            const myCircleList = JSON.parse(myCircleList_string)
+            setProofs(myCircleList)
+        }
+    }, [])
+
+    // console.log("content:", {
+    //     image,
+    //     title,
+    //     description,
+    //     content,
+    // });
 
     return (
         <Box>
@@ -73,7 +83,9 @@ export default function CreatePost() {
 
                 <Box mb={2}>
                     <Select name='proof' placeholder='No Proof selected'>
-                        <option>proof 1</option>
+                        {proofs.map((e: any) => {
+                            return <option>{e.description}</option> 
+                        })}
                     </Select>
                 </Box>
 

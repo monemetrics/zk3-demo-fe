@@ -22,14 +22,13 @@ function NewGroupPage() {
             <IdBar ensName="zk3.eth"></IdBar>
 
             <Text align='center' pt="2" fontSize="md">
-            Semaphore groups are binary incremental Merkle trees in which each leaf represents an Identity commitment for a user. Groups can be abstracted to represent events, polls, or organizations.
+                Semaphore groups are binary incremental Merkle trees in which each leaf represents an Identity commitment for a user. Groups can be abstracted to represent events, polls, or organizations.
 
-In our case, we will be using Groups to represent connections with web2.0 Auth providers.
+                In our case, we will be using Groups to represent connections with web2.0 Auth providers.
             </Text>
             <Spacer />
             {_identity && <Text align='center' pt="2" fontSize="lg" fontWeight='bold'> My groups:</Text>}
-            <Divider pt="5" borderColor="gray.500" />
-            <Flex flexDirection='column' p="6" alignItems='center'>
+            <Flex flexDirection='column' p="6" alignItems='center' borderColor='#1e2d52' borderWidth='1px' borderRadius='12px'>
                 <Spacer />
 
                 {(address && _identity) ? (
@@ -38,10 +37,9 @@ In our case, we will be using Groups to represent connections with web2.0 Auth p
                     <Text>Loading...</Text>
                 )}
             </Flex>
-            <Divider pt="5" borderColor="gray.500" />
-            <Link href='/' style={{marginTop: '2px'}}>
-                <Button variant='solid' colorScheme='blue' color='#fff' bgColor='#002add'>
-                Back
+            <Link href='/' style={{ marginTop: '2px' }}>
+                <Button position='fixed' left='20' bottom='20' variant='solid' colorScheme='blue' color='#fff' bgColor='#002add'>
+                    Back
                 </Button>
             </Link>
         </>

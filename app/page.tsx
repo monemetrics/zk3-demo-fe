@@ -3,13 +3,12 @@
 import { Divider, Flex, Text, Spacer, Button, useToast } from "@chakra-ui/react"
 import { Identity } from '@semaphore-protocol/identity'
 import { useState, useRef, useCallback, useEffect, useContext } from 'react'
-import { useAccount, useSignMessage } from 'wagmi'
-import { verifyMessage } from 'ethers/lib/utils'
 import { useAddress, useSDK } from "@thirdweb-dev/react";
 import IdBar from "./IdBar"
 import GroupList from "./GroupList"
 import LogsContext from "../context/LogsContext"
 import ZK3Context from "../context/ZK3Context"
+import { useQuery, gql } from '@apollo/client';
 
 function IdentityPage() {
     const toast = useToast()
@@ -17,7 +16,30 @@ function IdentityPage() {
     const { _lensAuthToken, _identity, setIdentity } = useContext(ZK3Context)
     const address = useAddress();
     const sdk = useSDK()
-    const [ _signature, setSignature ] = useState('')
+    const [_signature, setSignature] = useState('')
+
+    const GET_CIRCLES = gql`
+        query GetCircles {
+            circles {
+                name
+                id
+                description
+            }
+        }
+    `;
+
+    const { loading, error, data: _circleData } = useQuery(GET_CIRCLES)
+    const [circleData, setCircleData] = useState()
+
+    const fetchGroups = async () => {
+        const identityString = localStorage.getItem("identity")
+        if (!identityString)
+            return
+        const commitment = new Identity(identityString).getCommitment()
+        setCircleData(_circleData)
+        console.log('circleData: ', circleData)
+
+    }
 
     const createIdentity = useCallback(async (signature: any) => {
         console.log(signature)
@@ -57,10 +79,10 @@ function IdentityPage() {
             <Text align='center' pt="2" fontSize="md">
                 {_identity ? 'Identity successfully connected!' : 'In order to generate a new Identity you will need to sign a message'}
             </Text>
+            <Button variant='outline' onClick={fetchGroups}>fetch groups</Button>
             <Spacer />
             {_identity && <Text align='center' pt="2" fontSize="lg" fontWeight='bold'> My groups:</Text>}
-            <Divider pt="5" borderColor="gray.500" />
-            <Flex flexDirection='column' p="6" alignItems='center'>
+            <Flex flexDirection='column' p="6" alignItems='center' borderColor='#1e2d52' borderWidth='1px' borderRadius='12px'>
                 <Spacer />
 
                 {(_identity) ? (
@@ -76,7 +98,6 @@ function IdentityPage() {
                     </Button>
                 )}
             </Flex>
-            <Divider pt="5" borderColor="gray.500" />
         </>
     )
 }

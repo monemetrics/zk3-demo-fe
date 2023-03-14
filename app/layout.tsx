@@ -12,6 +12,14 @@ import Navbar from './Navbar'
 import theme from "../styles/index"
 import ZK3Context from '../context/ZK3Context';
 
+interface circle {
+  id: string,
+  members: string[],
+  name: string,
+  description: string,
+  contentURI: string
+}
+
 export default function RootLayout({
   children,
 }: {
@@ -43,6 +51,9 @@ export default function RootLayout({
   const [_lensAuthToken, setLensAuthToken] = useState<string>("")
   const [_githubAuthToken, setGithubAuthToken] = useState<string>("")
   const [_eventbriteAuthToken, setEventbriteAuthToken] = useState<string>("")
+  const [_myCircleList, setMyCircleList] = useState<circle[]>([])
+
+  
 
   useEffect(() => {
     const identityString = localStorage.getItem("identity")
@@ -55,7 +66,8 @@ export default function RootLayout({
 
     if (identityString) {
 
-      const identity = JSON.parse(identityString)
+      const identity = JSON.parse(identityString)/////////////////////////////////////////
+      const commitment = new Identity(identityString).getCommitment()
       setIdentity(identity)
 
       toast({
@@ -110,6 +122,8 @@ export default function RootLayout({
                     _lensAuthToken,
                     _githubAuthToken,
                     _eventbriteAuthToken,
+                    _myCircleList,
+                    setMyCircleList,
                     setIdentity,
                     setLensAuthToken,
                     setGithubAuthToken,

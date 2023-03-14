@@ -4,7 +4,7 @@ import ZK3Context from '../../context/ZK3Context';
 import { Flex, Card, CardHeader, CardBody, Text, Radio, RadioGroup, HStack, Divider, Select, Button } from "@chakra-ui/react"
 import EVMBalanceOfProof from './EVMBalanceOfProof';
 
-function LensActionList() {
+function EthActionList() {
     return (
         <>
             <Flex flexDirection='column' width='md' gap='2'>
@@ -14,4 +14,4 @@ function LensActionList() {
     )
 }
 
-export default LensActionList
+export default EthActionList

@@ -79,7 +79,6 @@ function IdentityPage() {
             <Text align='center' pt="2" fontSize="md">
                 {_identity ? 'Identity successfully connected!' : 'In order to generate a new Identity you will need to sign a message'}
             </Text>
-            <Button variant='outline' onClick={fetchGroups}>fetch groups</Button>
             <Spacer />
             {_identity && <Text align='center' pt="2" fontSize="lg" fontWeight='bold'> My groups:</Text>}
             <Flex flexDirection='column' p="6" alignItems='center' borderColor='#1e2d52' borderWidth='1px' borderRadius='12px'>

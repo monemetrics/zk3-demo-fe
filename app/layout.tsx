@@ -12,6 +12,11 @@ import Navbar from './Navbar'
 import theme from "../styles/index"
 import ZK3Context from '../context/ZK3Context';
 
+const MAINNET_API_URL = "https://api.lens.dev/"
+const MUMBAI_API_URL = "https://api-mumbai.lens.dev/"
+
+const url_in_use = MUMBAI_API_URL
+
 interface circle {
   id: string,
   members: string[],
@@ -31,7 +36,7 @@ export default function RootLayout({
   });
 
   const lensLink = new HttpLink({
-    uri: 'https://api.lens.dev',
+    uri: url_in_use,
   });
 
   const apolloClient = new ApolloClient({

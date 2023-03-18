@@ -1,6 +1,6 @@
 import { Web3Button } from "@thirdweb-dev/react";
 import React, { useEffect, useState } from "react";
-import { LENS_CONTRACT_ABI, LENS_CONTRACT_ADDRESS } from "../../const/contracts";
+import { LENS_MUMBAI_CONTRACT_ABI, LENS_MUMBAI_CONTRACT_ADDRESS } from "../../const/contracts";
 import { useCreatePost } from "../../lib/useCreatePost";
 import { Input, Textarea, Select, Radio, RadioGroup, HStack, FormLabel, Box } from "@chakra-ui/react";
 
@@ -32,7 +32,7 @@ export default function CreatePost() {
         <Box>
             <Box>
                 {/* Input for the image */}
-                {/*<Box>
+                <Box>
                     <Input
                         type="file"
                         onChange={(e) => {
@@ -41,7 +41,7 @@ export default function CreatePost() {
                             }
                         }}
                     />
-                    </Box>*/}
+                    </Box>
 
                 {/* Input for the title */}
                 <Box mb={2}>
@@ -91,8 +91,8 @@ export default function CreatePost() {
 
                 <Web3Button
                     accentColor="#002add"
-                    contractAddress={LENS_CONTRACT_ADDRESS}
-                    contractAbi={LENS_CONTRACT_ABI}
+                    contractAddress={LENS_MUMBAI_CONTRACT_ADDRESS}
+                    contractAbi={LENS_MUMBAI_CONTRACT_ABI}
                     action={async () => {
                         //if (!image) return;
 

@@ -7,7 +7,7 @@ import {
 import useLensUser from "./auth/useLensUser";
 import { signTypedDataWithOmmittedTypename, splitSignature } from "./helpers";
 import { v4 as uuidv4 } from "uuid";
-import { LENS_CONTRACT_ABI, LENS_CONTRACT_ADDRESS } from "../const/contracts";
+import { LENS_MUMBAI_CONTRACT_ABI, LENS_MUMBAI_CONTRACT_ADDRESS } from "../const/contracts";
 import useLogin from "./auth/useLogin";
 
 type CreatePostArgs = {
@@ -94,8 +94,8 @@ export function useCreatePost() {
 
     // 3. Use the signed typed data to send the transaction to the smart contract
     const lensHubContract = await sdk.getContractFromAbi(
-      LENS_CONTRACT_ADDRESS,
-      LENS_CONTRACT_ABI
+      LENS_MUMBAI_CONTRACT_ADDRESS,
+      LENS_MUMBAI_CONTRACT_ABI
     );
 
     // Destructure the stuff we need out of the typedData.value field

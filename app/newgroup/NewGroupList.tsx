@@ -69,24 +69,24 @@ function NewGroupList() {
         context: { apolloClientName: "lens" },
     });
 
-    const { signMessageAsync } = useSignMessage({
-        message: challengeData?.challenge.text,
-        onSuccess(data) {
-            //console.log(data)
-            try {
-                mutateFunction({ variables: { request: { address: address, signature: data } } })
-                    .then((response) => {
-                        setLensAuthToken(response.data.authenticate.accessToken)
-                        localStorage.setItem("lensAuthToken", response.data.authenticate.accessToken)
-                        setLogs('Successfully signed in with Lens!')
-                    })
-                onClose()
-            }
-            catch (error) {
-                console.log(error)
-            }
-        },
-    })
+    // const { signMessageAsync } = useSignMessage({
+    //     message: challengeData?.challenge.text,
+    //     onSuccess(data) {
+    //         //console.log(data)
+    //         try {
+    //             mutateFunction({ variables: { request: { address: address, signature: data } } })
+    //                 .then((response) => {
+    //                     setLensAuthToken(response.data.authenticate.accessToken)
+    //                     localStorage.setItem("lensAuthToken", response.data.authenticate.accessToken)
+    //                     setLogs('Successfully signed in with Lens!')
+    //                 })
+    //             onClose()
+    //         }
+    //         catch (error) {
+    //             console.log(error)
+    //         }
+    //     },
+    // })
 
     const { isOpen, onOpen, onClose } = useDisclosure()
     const [activeModalName, setActiveModalName] = useState('')
@@ -96,10 +96,10 @@ function NewGroupList() {
         onOpen()
     }
 
-    const signChallengeMessage = async () => {
-        if (activeModalName == 'Lens')
-            await signMessageAsync()
-    }
+    // const signChallengeMessage = async () => {
+    //     if (activeModalName == 'Lens')
+    //         await signMessageAsync()
+    // }
 
     return (
         <>
@@ -124,7 +124,7 @@ function NewGroupList() {
                         <Text>Please login to {activeModalName} in order to join the group:</Text>
                         <br />
                         {activeModalName === 'Lens' && <LensSignInButton />}
-                        {activeModalName !== 'Lens' && <Box onClick={signChallengeMessage} position='relative' p='4' borderWidth='1px' borderRadius='lg' maxW='sm' alignSelf='center' py='4' boxShadow='md' maxH='80px' _hover={{
+                        {activeModalName !== 'Lens' && <Box onClick={() => {}} position='relative' p='4' borderWidth='1px' borderRadius='lg' maxW='sm' alignSelf='center' py='4' boxShadow='md' maxH='80px' _hover={{
                             background: "white",
                             color: "blue.500",
                             cursor: "pointer"

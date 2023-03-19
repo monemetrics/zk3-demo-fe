@@ -4,20 +4,29 @@ import { LENS_MUMBAI_CONTRACT_ABI, LENS_MUMBAI_CONTRACT_ADDRESS } from "../../co
 import { useCreatePost } from "../../lib/useCreatePost";
 import { Input, Textarea, Select, Radio, RadioGroup, HStack, FormLabel, Box } from "@chakra-ui/react";
 
+interface circle {
+    id: string,
+    members: string[],
+    name: string,
+    description: string,
+    contentURI: string
+}
+
 export default function CreatePost() {
     const [image, setImage] = useState<File | null>(null);
     const [title, setTitle] = useState<string>("");
     const [description, setDescription] = useState<string>("");
     const [content, setContent] = useState<string>("");
     const { mutateAsync: createPost } = useCreatePost();
-    const [ proofs, setProofs ] = useState([])
+    const [ circles, setCircles ] = useState<circle[]>([]);
+    const [ selectedProof, setSelectedProof ] = useState<circle>();
 
     useEffect(() => {
         const myCircleList_string = localStorage.getItem('myCircleList')
         if (myCircleList_string)
         {
             const myCircleList = JSON.parse(myCircleList_string)
-            setProofs(myCircleList)
+            setCircles(myCircleList)
         }
     }, [])
 
@@ -82,8 +91,9 @@ export default function CreatePost() {
                 {/* Attached Proof */}
 
                 <Box mb={2}>
-                    <Select name='proof' placeholder='No Proof selected'>
-                        {proofs.map((e: any) => {
+                    <Select name='proof' placeholder='No Proof selected'
+                        onChange={(e) => {setSelectedProof(circles.find((entry) => {entry.description === e.target.value}))}}>
+                        {circles.map((e: any) => {
                             return <option>{e.description}</option> 
                         })}
                     </Select>
@@ -101,6 +111,7 @@ export default function CreatePost() {
                             title,
                             description,
                             content,
+                            selectedProof,
                         });
                     }}
                 >

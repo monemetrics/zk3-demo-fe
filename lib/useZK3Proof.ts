@@ -1,5 +1,5 @@
 import { useState, useEffect, useContext } from "react"
-import { Group, Member } from "@semaphore-protocol/group"
+import { Group } from "@semaphore-protocol/group"
 import { Identity } from "@semaphore-protocol/identity"
 import { generateProof, verifyProof, FullProof } from "@semaphore-protocol/proof"
 import { keccak256 } from "ethers/lib/utils"

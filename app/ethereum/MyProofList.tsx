@@ -23,6 +23,7 @@ function MyProofList(props: { data: any }) {
 
     var circleList = props.data.circles
     const commitment = new Identity(_identity.toString()).getCommitment()
+    console.log(circleList, commitment)
 
     var myCircleList: circle[] = []
     circleList.forEach((element: any) => {

@@ -1,3 +1,5 @@
+'use client'
+
 import { Web3Button } from "@thirdweb-dev/react";
 import React, { useEffect, useState } from "react";
 import { LENS_MUMBAI_CONTRACT_ABI, LENS_MUMBAI_CONTRACT_ADDRESS } from "../../const/contracts";
@@ -91,10 +93,9 @@ export default function CreatePost() {
                 {/* Attached Proof */}
 
                 <Box mb={2}>
-                    <Select name='proof' placeholder='No Proof selected'
-                        onChange={(e) => {setSelectedProof(circles.find((entry) => {entry.description === e.target.value}))}}>
-                        {circles.map((e: any) => {
-                            return <option>{e.description}</option> 
+                    <Select name='proof' placeholder='No Proof selected'>
+                        {circles.map((e: circle) => {
+                            return <option key={e.id} onClick={() => setSelectedProof(e)}>{e.description}</option> 
                         })}
                     </Select>
                 </Box>

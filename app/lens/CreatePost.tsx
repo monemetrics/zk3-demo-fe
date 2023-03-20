@@ -20,13 +20,12 @@ export default function CreatePost() {
     const [description, setDescription] = useState<string>("");
     const [content, setContent] = useState<string>("");
     const { mutateAsync: createPost } = useCreatePost();
-    const [ circles, setCircles ] = useState<circle[]>([]);
-    const [ selectedProof, setSelectedProof ] = useState<circle>();
+    const [circles, setCircles] = useState<circle[]>([]);
+    const [selectedProof, setSelectedProof] = useState<circle>();
 
     useEffect(() => {
         const myCircleList_string = localStorage.getItem('myCircleList')
-        if (myCircleList_string)
-        {
+        if (myCircleList_string) {
             const myCircleList = JSON.parse(myCircleList_string)
             setCircles(myCircleList)
         }
@@ -43,7 +42,7 @@ export default function CreatePost() {
         <Box>
             <Box>
                 {/* Input for the image */}
-                <Box>
+                {/*<Box>
                     <Input
                         type="file"
                         onChange={(e) => {
@@ -52,7 +51,7 @@ export default function CreatePost() {
                             }
                         }}
                     />
-                    </Box>
+                </Box>*/}
 
                 {/* Input for the title */}
                 <Box mb={2}>
@@ -93,9 +92,10 @@ export default function CreatePost() {
                 {/* Attached Proof */}
 
                 <Box mb={2}>
-                    <Select name='proof' placeholder='No Proof selected'>
+                    <Select name='proof' placeholder='No Proof selected' onChange={(event) => 
+                        setSelectedProof(circles.find((e: circle) => e.id === event.target.value))}>
                         {circles.map((e: circle) => {
-                            return <option key={e.id} onClick={() => setSelectedProof(e)}>{e.description}</option> 
+                            return <option key={e.id} value={e.id}>{e.description}</option> 
                         })}
                     </Select>
                 </Box>

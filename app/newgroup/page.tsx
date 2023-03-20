@@ -19,7 +19,7 @@ function NewGroupPage() {
             <Text align='center' as="b" fontSize="5xl">
                 New Group
             </Text>
-            <IdBar ensName="zk3.eth"></IdBar>
+            {/*<IdBar ensName="zk3.eth"></IdBar>*/}
 
             <Text align='center' pt="2" fontSize="md">
                 Semaphore groups are binary incremental Merkle trees in which each leaf represents an Identity commitment for a user. Groups can be abstracted to represent events, polls, or organizations.

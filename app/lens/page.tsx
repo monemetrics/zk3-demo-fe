@@ -19,7 +19,7 @@ function LensGroupPage() {
             <Text align='center' as="b" fontSize="5xl">
                 Lens Group
             </Text>
-            <IdBar ensName="zk3.eth"></IdBar>
+            {/*<IdBar ensName="zk3.eth"></IdBar>*/}
 
             <Text align='center' pt="2" fontSize="md">
                 Please select an action to perform in the Lens Group

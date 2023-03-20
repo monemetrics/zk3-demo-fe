@@ -60,21 +60,21 @@ function EVMBalanceOfProof() {
 
     const handleGenerateProof = async (e: any) => {
         // toDo: add erc20 support (currently only native tokens)
-        console.log(_identity)
+        //console.log(_identity)
         if (!_identity)
             return
         if (!address)
             return
         const commitment = new Identity(_identity.toString()).getCommitment()
-        console.log(commitment)
+        //console.log(commitment)
         const typedData = await createBalanceOfProofTypedData(commitment.toString(), address, BigNumber.from(10))
 
         const signature = await sdk?.wallet.signTypedData(typedData.domain, typedData.types, typedData.value)
-        console.log(signature)
+        //console.log(signature)
 
         mutateFunction({ variables: { identityCommitment: commitment.toString(), ethAddress: address, balance: '1', signature: signature?.signature } })
                     .then((response) => {
-                        console.log(response)
+                        console.log("response: ", response)
                     })
 
     }

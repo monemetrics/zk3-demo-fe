@@ -74,7 +74,7 @@ function IdentityPage() {
             <Text align='center' as="b" fontSize="5xl">
                 Identity
             </Text>
-            <IdBar ensName="zk3.eth"></IdBar>
+            {/*<IdBar ensName="zk3.eth"></IdBar>*/}
 
             <Text align='center' pt="2" fontSize="md">
                 {_identity ? 'Identity successfully connected!' : 'In order to generate a new Identity you will need to sign a message'}

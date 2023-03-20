@@ -23,17 +23,17 @@ function MyProofList(props: { data: any }) {
 
     var circleList = props.data.circles
     const commitment = new Identity(_identity.toString()).getCommitment()
-    console.log(circleList, commitment)
+    //console.log(circleList, commitment)
 
     var myCircleList: circle[] = []
     circleList.forEach((element: any) => {
         if (element.members.includes(commitment.toString())){
-            console.log(element.id, element.members)
+            //console.log(element.id, element.members)
             myCircleList.push(element)
         }
     });
 
-    console.log(myCircleList)
+    //console.log(myCircleList)
 
     localStorage.setItem("myCircleList", JSON.stringify(myCircleList))
 
@@ -41,7 +41,7 @@ function MyProofList(props: { data: any }) {
         <>
             <Flex flexDirection='column' width='md' gap='2'>
                 {myCircleList.map((e: circle) => {return (
-                    <PrimaryCard name={e.description} logo='Ethereum' text={e.contentURI} />
+                    <PrimaryCard key={e.id} name={e.description} logo='Ethereum' text={e.contentURI} />
                 )})}
             </Flex>
         </>

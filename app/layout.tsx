@@ -73,6 +73,7 @@ export default function RootLayout({
       console.log('identityString: ', identityString)
       const identity = new Identity(identityString)/////////////////////////////////////////
       const commitment = identity.getCommitment()
+      console.log('commitment: ', commitment)
       setIdentity(identity)
 
       toast({

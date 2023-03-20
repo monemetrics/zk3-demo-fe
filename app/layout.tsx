@@ -70,9 +70,10 @@ export default function RootLayout({
     }
 
     if (identityString) {
-
-      const identity = JSON.parse(identityString)/////////////////////////////////////////
-      const commitment = new Identity(identityString).getCommitment()
+      console.log('identityString: ', identityString)
+      const identity = new Identity(identityString)/////////////////////////////////////////
+      const commitment = identity.getCommitment()
+      console.log('commitment: ', commitment)
       setIdentity(identity)
 
       toast({

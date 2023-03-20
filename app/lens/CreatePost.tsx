@@ -31,6 +31,10 @@ export default function CreatePost() {
         }
     }, [])
 
+    useEffect(() => {
+        console.log("selectedProof:", selectedProof?.description);
+    }, [selectedProof]);
+
     // console.log("content:", {
     //     image,
     //     title,

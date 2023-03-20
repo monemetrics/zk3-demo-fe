@@ -41,7 +41,7 @@ export function useCreatePost() {
         await loginUser()
 
         if (content && content.length > 0 && _identity && selectedProof) {
-            console.log("setting proof args")
+            console.log("setting proof args", _identity, selectedProof, content)
             generateFullProof(_identity, selectedProof, content)
         }
         console.log("after generateFullProof")

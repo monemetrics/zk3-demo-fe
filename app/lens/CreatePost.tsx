@@ -32,6 +32,10 @@ export default function CreatePost() {
         }
     }, [])
 
+    useEffect(() => {
+        console.log("selectedProof:", selectedProof?.description);
+    }, [selectedProof]);
+
     // console.log("content:", {
     //     image,
     //     title,
@@ -93,9 +97,10 @@ export default function CreatePost() {
                 {/* Attached Proof */}
 
                 <Box mb={2}>
-                    <Select name='proof' placeholder='No Proof selected'>
+                    <Select name='proof' placeholder='No Proof selected' onChange={(event) => 
+                        setSelectedProof(circles.find((e: circle) => e.id === event.target.value))}>
                         {circles.map((e: circle) => {
-                            return <option key={e.id} onClick={() => setSelectedProof(e)}>{e.description}</option> 
+                            return <option key={e.id} value={e.id}>{e.description}</option> 
                         })}
                     </Select>
                 </Box>

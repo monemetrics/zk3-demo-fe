@@ -3,7 +3,7 @@ import { Group } from "@semaphore-protocol/group"
 import { Identity } from "@semaphore-protocol/identity"
 import { generateProof, verifyProof, FullProof } from "@semaphore-protocol/proof"
 import { keccak256 } from "ethers/lib/utils"
-import { utils } from "ethers"
+import { BigNumber, utils } from "ethers"
 
 interface circle {
     id: string
@@ -14,13 +14,11 @@ interface circle {
 }
 
 const useZK3Proof = () => {
-
     const generateFullProof = async (_identity: Identity, _circle: circle, _signal: string) => {
-        console.log("start generateFullProof")
+        console.log("start generateFullProof", _identity)
         if (_identity && _circle && _signal) {
             console.log("generating proof: ", _circle, _signal)
-        }
-        else {
+        } else {
             console.log("generateFullProof: failed argument check: ", _identity, _circle, _signal)
             return
         }
@@ -30,8 +28,15 @@ const useZK3Proof = () => {
             return
         }
         console.log("generateFullProof: passed all return checks")
+        // check if identity is part of the group
+        if (!group.indexOf(_identity.commitment)) {
+            console.log("identity is not part of the group")
+            return
+        }
         const externalNullifier = group.root
-        const hashedPostBody = utils.formatBytes32String(_signal)
+        const hashedPostBody = keccak256(Buffer.from(_signal))
+        // const merkleProof = await group.generateMerkleProof(group.indexOf(_identity.commitment))
+
         const fullProof = await generateProof(_identity, group, externalNullifier, hashedPostBody)
         console.log("fullProof: ", fullProof)
         const success = await verifyProof(fullProof, 20)
@@ -44,8 +49,11 @@ const useZK3Proof = () => {
 
     function generateGroupFromCircle(_circle: circle) {
         const _group = new Group(_circle.id)
+        console.log("roop pre adding members: ", _group.root)
+        console.log("circle Members: ", _circle.members)
         _group.addMembers(_circle.members)
         console.log("group: ", _group)
+        console.log("group root: ", _group.root)
         return _group
     }
 

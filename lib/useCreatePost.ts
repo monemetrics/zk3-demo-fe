@@ -4,11 +4,13 @@ import { PublicationMainFocus, useCreatePostTypedDataMutation } from "../graphql
 import useLensUser from "./auth/useLensUser"
 import { signTypedDataWithOmmittedTypename, splitSignature } from "./helpers"
 import { v4 as uuidv4 } from "uuid"
-import { LENS_MUMBAI_CONTRACT_ABI, LENS_MUMBAI_CONTRACT_ADDRESS } from "../const/contracts"
+import { LENS_MUMBAI_CONTRACT_ABI, LENS_MUMBAI_CONTRACT_ADDRESS, LENS_SANDBOX_CONTRACT_ADDRESS } from "../const/contracts"
 import useLogin from "./auth/useLogin"
 import { useEffect, useContext } from "react"
 import ZK3Context from "../context/ZK3Context"
 import useZK3Proof from "./useZK3Proof"
+import { keccak256 } from "ethers/lib/utils"
+import { ethers } from "ethers"
 
 interface circle {
     id: string
@@ -40,103 +42,107 @@ export function useCreatePost() {
         // 0. Login
         await loginUser()
 
-        if (content && content.length > 0 && _identity && selectedProof) {
-            console.log("setting proof args", _identity, selectedProof, content)
-            generateFullProof(_identity, selectedProof, content)
+        if (!(content && content.length > 0 && _identity && selectedProof)) {
+            return
         }
-        console.log("after generateFullProof")
+        console.log("setting proof args", _identity, selectedProof, content)
+        const proof = await generateFullProof(_identity, selectedProof, content)
+        
+        // 0. Upload the image to IPFS
+        const imageIpfsUrl = (await uploadToIpfs({ data: [image] }))[0]
 
-        // // 0. Upload the image to IPFS
-        // const imageIpfsUrl = (await uploadToIpfs({ data: [image] }))[0]
+        console.log("imageIpfsUrl", imageIpfsUrl)
 
-        // console.log("imageIpfsUrl", imageIpfsUrl)
+        // 0B) Upload the actual content to IPFS
+        // This is going to be a Object which contains the image field as well
+        const postMetadata = {
+            version: "2.0.0",
+            mainContentFocus: PublicationMainFocus.TextOnly,
+            metadata_id: uuidv4(),
+            description: description,
+            locale: "en-US",
+            content: content,
+            external_url: null,
+            image: imageIpfsUrl,
+            imageMimeType: null,
+            name: title,
+            attributes: <any>[],
+            tags: []
+        }
 
-        // // 0B) Upload the actual content to IPFS
-        // // This is going to be a Object which contains the image field as well
-        // const postMetadata = {
-        //     version: "2.0.0",
-        //     mainContentFocus: PublicationMainFocus.TextOnly,
-        //     metadata_id: uuidv4(),
-        //     description: description,
-        //     locale: "en-US",
-        //     content: content,
-        //     external_url: null,
-        //     image: imageIpfsUrl,
-        //     imageMimeType: null,
-        //     name: title,
-        //     attributes: <any>[],
-        //     tags: []
-        // }
+        // Add ZK3 Proof metadata | this metadata will be used by front-ends (lenster) to display badge data accurately without having to check the proof
 
-        // // Add ZK3 Proof metadata
+        if (selectedProof) {
+            console.log("adding circleId to metadata: ", selectedProof.id)
+            postMetadata.attributes.push({
+                traitType: "zk3Circle",
+                value: selectedProof.id.toString()
+            })
+        }
 
-        // if (selectedProof) {
-        //     console.log("adding circleId to metadata: ", selectedProof.id)
-        //     postMetadata.attributes.push({
-        //         traitType: "zk3Circle",
-        //         value: selectedProof.id.toString()
-        //     })
-        // }
+        const postMetadataIpfsUrl = (await uploadToIpfs({ data: [postMetadata] }))[0]
 
-        // const postMetadataIpfsUrl = (await uploadToIpfs({ data: [postMetadata] }))[0]
+        console.log("postMetadataIpfsUrl", postMetadataIpfsUrl)
 
-        // console.log("postMetadataIpfsUrl", postMetadataIpfsUrl)
+        // 1. Ask Lens to give us the typed data
+        const typedData = await requestTypedData({
+            request: {
+                collectModule: {
+                    freeCollectModule: {
+                        followerOnly: false
+                    }
+                },
+                referenceModule: {
+                    followerOnlyReferenceModule: false
+                },
+                contentURI: postMetadataIpfsUrl,
+                profileId: profileQuery.data?.defaultProfile?.id
+            }
+        })
 
-        // // 1. Ask Lens to give us the typed data
-        // const typedData = await requestTypedData({
-        //     request: {
-        //         collectModule: {
-        //             freeCollectModule: {
-        //                 followerOnly: false
-        //             }
-        //         },
-        //         referenceModule: {
-        //             followerOnlyReferenceModule: false
-        //         },
-        //         contentURI: postMetadataIpfsUrl,
-        //         profileId: profileQuery.data?.defaultProfile?.id
-        //     }
-        // })
+        const { domain, types, value } = typedData.createPostTypedData.typedData
 
-        // const { domain, types, value } = typedData.createPostTypedData.typedData
+        if (!sdk) return
 
-        // if (!sdk) return
+        // 2. Sign the typed data
+        const signature = await signTypedDataWithOmmittedTypename(sdk, domain, types, value)
 
-        // // 2. Sign the typed data
-        // const signature = await signTypedDataWithOmmittedTypename(sdk, domain, types, value)
+        //const { v, r, s } = splitSignature(signature.signature)
 
-        // const { v, r, s } = splitSignature(signature.signature)
+        // 3. Use the signed typed data to send the transaction to the smart contract
+        const lensHubContract = await sdk.getContractFromAbi(LENS_SANDBOX_CONTRACT_ADDRESS, LENS_MUMBAI_CONTRACT_ABI)
 
-        // // 3. Use the signed typed data to send the transaction to the smart contract
-        // const lensHubContract = await sdk.getContractFromAbi(LENS_MUMBAI_CONTRACT_ADDRESS, LENS_MUMBAI_CONTRACT_ABI)
+        // Destructure the stuff we need out of the typedData.value field
+        const {
+            collectModule,
+            collectModuleInitData,
+            contentURI,
+            deadline,
+            profileId,
+        } = typedData.createPostTypedData.typedData.value
 
-        // // Destructure the stuff we need out of the typedData.value field
-        // const {
-        //     collectModule,
-        //     collectModuleInitData,
-        //     contentURI,
-        //     deadline,
-        //     profileId,
-        //     referenceModule,
-        //     referenceModuleInitData
-        // } = typedData.createPostTypedData.typedData.value
+        const referenceModule = "0x69482d8265CE6EEF4a2E00591E801D03A755521E"
+        const hashedPostBody = keccak256(Buffer.from(content));
+        const referenceModuleInitData = ethers.utils.AbiCoder.prototype.encode(
+            ['bool', 'bool', 'uint256', 'uint256', 'uint256', 'uint256','uint256[8]'],
+            [false, false, hashedPostBody,
+            proof?.nullifierHash,
+            selectedProof.id.toString(),
+            proof?.externalNullifier,
+            proof?.proof]
+          );
 
-        // const result = await lensHubContract.call("postWithSig", {
-        //     profileId: profileId,
-        //     contentURI: contentURI,
-        //     collectModule,
-        //     collectModuleInitData,
-        //     referenceModule,
-        //     referenceModuleInitData,
-        //     sig: {
-        //         v,
-        //         r,
-        //         s,
-        //         deadline: deadline
-        //     }
-        // })
+        const result = await lensHubContract.call("postWithSig", {
+            profileId: profileId,
+            contentURI: contentURI,
+            collectModule,
+            collectModuleInitData,
+            referenceModule, // add address of LensZK3ReferenceModule here
+            referenceModuleInitData, // add ABI encoded proof here
+            signature: signature.signature
+        })
 
-        // console.log(result)
+        console.log(result)
     }
 
     return useMutation(createPost)

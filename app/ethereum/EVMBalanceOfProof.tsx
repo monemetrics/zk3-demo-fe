@@ -1,6 +1,6 @@
 import React from 'react'
 import { useContext, useEffect, useState } from 'react';
-import { Flex, Card, CardHeader, CardBody, Text, Radio, RadioGroup, HStack, Divider, Select, Button } from "@chakra-ui/react"
+import { Flex, Card, CardHeader, CardBody, Text, Radio, RadioGroup, HStack, Divider, Select, Button, useToast } from "@chakra-ui/react"
 import {
     Modal,
     ModalOverlay,
@@ -40,6 +40,7 @@ function EVMBalanceOfProof() {
     const { _identity } = useContext(ZK3Context)
     const address = useAddress()
     const sdk = useSDK()
+    const toast = useToast()
     
     var BALANCE_OF_PROOF = gql`mutation CreateBalanceOfProof(
         $identityCommitment: String!, 
@@ -75,6 +76,13 @@ function EVMBalanceOfProof() {
         mutateFunction({ variables: { identityCommitment: commitment.toString(), ethAddress: address, balance: '1', signature: signature?.signature } })
                     .then((response) => {
                         console.log("response: ", response)
+                        toast({
+                            title: 'BalanceOfProof successfully created!',
+                            description: `https://mumbai.polygonscan.com/tx/${response.data.createBalanceOfProof}`,
+                            status: 'success',
+                            duration: 100000,
+                            isClosable: true,
+                          })
                     })
 
     }

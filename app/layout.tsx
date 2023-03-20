@@ -14,8 +14,9 @@ import ZK3Context from '../context/ZK3Context';
 
 const MAINNET_API_URL = "https://api.lens.dev/"
 const MUMBAI_API_URL = "https://api-mumbai.lens.dev/"
+const SANDBOX_API_URL = "https://api-sandbox-mumbai.lens.dev/"
 
-const url_in_use = MUMBAI_API_URL
+const url_in_use = SANDBOX_API_URL
 
 interface circle {
   id: string,

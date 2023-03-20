@@ -2,7 +2,7 @@
 
 import { Web3Button } from "@thirdweb-dev/react";
 import React, { useEffect, useState } from "react";
-import { LENS_MUMBAI_CONTRACT_ABI, LENS_MUMBAI_CONTRACT_ADDRESS } from "../../const/contracts";
+import { LENS_MUMBAI_CONTRACT_ABI, LENS_MUMBAI_CONTRACT_ADDRESS, LENS_SANDBOX_CONTRACT_ADDRESS } from "../../const/contracts";
 import { useCreatePost } from "../../lib/useCreatePost";
 import { Input, Textarea, Select, Radio, RadioGroup, HStack, FormLabel, Box } from "@chakra-ui/react";
 
@@ -106,7 +106,7 @@ export default function CreatePost() {
 
                 <Web3Button
                     accentColor="#002add"
-                    contractAddress={LENS_MUMBAI_CONTRACT_ADDRESS}
+                    contractAddress={LENS_SANDBOX_CONTRACT_ADDRESS}
                     contractAbi={LENS_MUMBAI_CONTRACT_ABI}
                     action={async () => {
                         //if (!image) return;

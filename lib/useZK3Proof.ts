@@ -41,10 +41,8 @@ const useZK3Proof = () => {
         console.log("fullProof: ", fullProof)
         const success = await verifyProof(fullProof, 20)
         console.log("isSuccess: ", success)
-        if (success) {
-            console.log("proof generated successfully: ", fullProof)
-        } else console.log("error: proof construction failed")
         // todo: actually attach proof to post and send it (after testing that the proof is ok!)
+        return fullProof;
     }
 
     function generateGroupFromCircle(_circle: circle) {

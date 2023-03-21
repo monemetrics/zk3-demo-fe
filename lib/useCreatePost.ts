@@ -108,7 +108,8 @@ export function useCreatePost() {
             })
         }
 
-        const postMetadataIpfsUrl = await uploadJSONToIPFS(JSON.stringify(postMetadata))
+        // const postMetadataIpfsUrl = await uploadToIpfs(JSON.stringify(postMetadata))
+        const postMetadataIpfsUrl = (await uploadToIpfs({ data: [postMetadata] }))[0]
 
         console.log("postMetadataIpfsUrl", postMetadataIpfsUrl)
 

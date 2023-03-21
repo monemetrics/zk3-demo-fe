@@ -6,10 +6,11 @@ import {
   ChainId,
   MediaRenderer,
 } from "@thirdweb-dev/react";
-import React, { useEffect } from "react";
+import React, { useEffect, useContext } from "react";
 import useLensUser from "../../lib/auth/useLensUser";
 import useLogin from "../../lib/auth/useLogin";
 import { Button, HStack, Text } from "@chakra-ui/react";
+import ZK3Context from "../../context/ZK3Context";
 type Props = {};
 
 export default function LensSignInButton({ }: Props) {
@@ -18,10 +19,12 @@ export default function LensSignInButton({ }: Props) {
   const [, switchNetwork] = useNetwork(); // Function to switch the network.
   const { isSignedInQuery, profileQuery } = useLensUser();
   const { mutate: requestLogin } = useLogin();
+  const { _lensAuthToken, setLensAuthToken } = useContext(ZK3Context);
 
   useEffect(() => {
     const handleStorage = () => {
       isSignedInQuery.refetch()
+      setLensAuthToken(JSON.parse(localStorage.getItem("LH_STORAGE_KEY")!).accessToken)
     }
 
     window.addEventListener('storage', handleStorage)

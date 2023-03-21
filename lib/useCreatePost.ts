@@ -101,10 +101,10 @@ export function useCreatePost() {
         // Add ZK3 Proof metadata | this metadata will be used by front-ends (lenster) to display badge data accurately without having to check the proof
 
         if (selectedProof) {
-            console.log("adding circleId to metadata: ", selectedProof.id)
+            console.log("adding circle description to metadata: ", selectedProof.description)
             postMetadata.attributes.push({
                 traitType: "zk3Circle",
-                value: selectedProof.id.toString()
+                value: selectedProof.description
             })
         }
 
@@ -177,6 +177,7 @@ export function useCreatePost() {
         console.log("rootOnChain", rootOnChain.toString())
         // check if roots match
         if (rootOnChain.toString() !== group.root.toString()) {
+            console.log("localRoot", group.root.toString())
             console.log("roots don't match")
             return
         }

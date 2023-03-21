@@ -73,11 +73,11 @@ function EVMBalanceOfProof() {
         const signature = await sdk?.wallet.signTypedData(typedData.domain, typedData.types, typedData.value)
         //console.log(signature)
 
-        mutateFunction({ variables: { identityCommitment: commitment.toString(), ethAddress: address, balance: '2', signature: signature?.signature } })
+        mutateFunction({ variables: { identityCommitment: commitment.toString(), ethAddress: address, balance: balanceOfValue.toString(), signature: signature?.signature } })
                     .then((response) => {
                         console.log("response: ", response)
                         toast({
-                            title: 'BalanceOfProof successfully created!',
+                            title: `BalanceOfProof ${balanceOfValue} successfully created!`,
                             description: `https://mumbai.polygonscan.com/tx/${response.data.createBalanceOfProof}`,
                             status: 'success',
                             duration: 100000,

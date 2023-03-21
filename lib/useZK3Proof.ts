@@ -29,20 +29,21 @@ const useZK3Proof = () => {
         }
         console.log("generateFullProof: passed all return checks")
         // check if identity is part of the group
-        if (!group.indexOf(_identity.commitment)) {
-            console.log("identity is not part of the group")
+        if (!group.indexOf(_identity.commitment.toString())) {
+            console.log("identity is not part of the group", _identity.commitment, group.members)
             return
         }
         const externalNullifier = group.root
-        const hashedPostBody = keccak256(Buffer.from(_signal))
+        const hashedPostBody = BigNumber.from(keccak256(Buffer.from(_signal)))
         // const merkleProof = await group.generateMerkleProof(group.indexOf(_identity.commitment))
-
+        console.log("root: ", group.root)
         const fullProof = await generateProof(_identity, group, externalNullifier, hashedPostBody)
         console.log("fullProof: ", fullProof)
+
         const success = await verifyProof(fullProof, 20)
         console.log("isSuccess: ", success)
         // todo: actually attach proof to post and send it (after testing that the proof is ok!)
-        return fullProof;
+        return { proof: fullProof, group }
     }
 
     function generateGroupFromCircle(_circle: circle) {

@@ -6,7 +6,7 @@ import {
   ChainId,
   MediaRenderer,
 } from "@thirdweb-dev/react";
-import React from "react";
+import React, { useEffect } from "react";
 import useLensUser from "../../lib/auth/useLensUser";
 import useLogin from "../../lib/auth/useLogin";
 import { Button, HStack, Text } from "@chakra-ui/react";
@@ -18,6 +18,15 @@ export default function LensSignInButton({ }: Props) {
   const [, switchNetwork] = useNetwork(); // Function to switch the network.
   const { isSignedInQuery, profileQuery } = useLensUser();
   const { mutate: requestLogin } = useLogin();
+
+  useEffect(() => {
+    const handleStorage = () => {
+      isSignedInQuery.refetch()
+    }
+
+    window.addEventListener('storage', handleStorage)
+    return () => window.removeEventListener('storage', handleStorage)
+  }, [])
 
   // 1. User needs to connect their wallet
   if (!address) {

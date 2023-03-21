@@ -73,7 +73,7 @@ export function useCreatePost() {
             return
         }
         console.log("setting proof args", _identity, selectedProof, content)
-        const { proof, group } = await generateFullProof(_identity, selectedProof, content)
+        const { proof, group } = (await generateFullProof(_identity, selectedProof, content))!
         console.log("proof", proof)
         console.log("group", group)
         // 0. Upload the image to IPFS

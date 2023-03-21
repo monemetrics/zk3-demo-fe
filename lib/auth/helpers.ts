@@ -45,6 +45,7 @@ export function setAccessToken(accessToken: string, refreshToken: string) {
   }
 
   ls.setItem(STORAGE_KEY, JSON.stringify({ accessToken, refreshToken, exp }));
+  window.dispatchEvent(new Event('storage'))
 }
 
 // 3. Parse the JWT token that comes back and extract the exp date field

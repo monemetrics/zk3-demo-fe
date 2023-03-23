@@ -54,6 +54,7 @@ export default function RootLayout({
 
   const toast = useToast()
   const [_identity, setIdentity] = useState<Identity | null>(null)
+  const [_identityLinkedEOA, setIdentityLinkedEOA] = useState<string | null>(null)
   const [_lensAuthToken, setLensAuthToken] = useState<string>("")
   const [_githubAuthToken, setGithubAuthToken] = useState<string>("")
   const [_eventbriteAuthToken, setEventbriteAuthToken] = useState<string>("")
@@ -64,6 +65,12 @@ export default function RootLayout({
   useEffect(() => {
     const identityString = localStorage.getItem("identity")
     const lensAuthToken = localStorage.getItem("LH_STORAGE_KEY")
+    const identityLinkedEOA = localStorage.getItem("identityLinkedEOA")
+
+    if (identityLinkedEOA) {
+      setIdentityLinkedEOA(identityLinkedEOA)
+      console.log('found identityLinkedEOA')
+    }
 
     if (lensAuthToken) {
       setLensAuthToken(JSON.parse(lensAuthToken).accessToken)
@@ -126,12 +133,14 @@ export default function RootLayout({
                 <ZK3Context.Provider
                   value={{
                     _identity,
+                    _identityLinkedEOA,
                     _lensAuthToken,
                     _githubAuthToken,
                     _eventbriteAuthToken,
                     _myCircleList,
                     setMyCircleList,
                     setIdentity,
+                    setIdentityLinkedEOA,
                     setLensAuthToken,
                     setGithubAuthToken,
                     setEventbriteAuthToken,

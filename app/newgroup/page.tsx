@@ -12,13 +12,15 @@ import { SettingsIcon } from "@chakra-ui/icons"
 
 function NewGroupPage() {
     const { setLogs } = useContext(LogsContext)
-    const { _identity, setIdentity, setMyCircleList } = useContext(ZK3Context)
+    const { _identity, setIdentity, setMyCircleList, setIdentityLinkedEOA } = useContext(ZK3Context)
     const address = useAddress()
     const toast = useToast()
 
     const handleDisconnectIdentity = () => {
         localStorage.removeItem("identity")
         localStorage.removeItem("myCircleList")
+        localStorage.removeItem("identityLinkedEOA")
+        setIdentityLinkedEOA(null)
         setIdentity(null)
         setMyCircleList([])
         toast({
@@ -32,9 +34,10 @@ function NewGroupPage() {
 
     return (
         <>
-        <Flex justifyContent='end'>
+            <Flex justifyContent='end'>
                 <Menu>
                     <MenuButton
+                        variant='ghost'
                         as={IconButton}
                         aria-label='settings'
                         icon={<SettingsIcon />} />
@@ -48,7 +51,7 @@ function NewGroupPage() {
             <Text align='center' as="b" fontSize="5xl">
                 New Group
             </Text>
-            {/*<IdBar ensName="zk3.eth"></IdBar>*/}
+            <IdBar />
 
             <Text align='center' pt="2" fontSize="md">
                 Semaphore groups are binary incremental Merkle trees in which each leaf represents an Identity commitment for a user. Groups can be abstracted to represent events, polls, or organizations.

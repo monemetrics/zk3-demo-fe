@@ -1,6 +1,7 @@
 'use client'
 
-import { Divider, Flex, Text, Spacer, Button, useToast } from "@chakra-ui/react"
+import { Divider, Flex, Text, Spacer, Button, useToast, IconButton, Menu, MenuButton, MenuList, MenuItem } from "@chakra-ui/react"
+import { SettingsIcon } from "@chakra-ui/icons"
 import { Identity } from '@semaphore-protocol/identity'
 import { useState, useRef, useCallback, useEffect, useContext } from 'react'
 import { useAddress, useSDK } from "@thirdweb-dev/react";
@@ -10,11 +11,12 @@ import GroupList from "./GroupList"
 import LogsContext from "../context/LogsContext"
 import ZK3Context from "../context/ZK3Context"
 import { useQuery, gql } from '@apollo/client';
+import Link from "next/link";
 
 function IdentityPage() {
     const toast = useToast()
     const { setLogs } = useContext(LogsContext)
-    const { _lensAuthToken, _identity, setIdentity } = useContext(ZK3Context)
+    const { _lensAuthToken, _identity, setIdentity, setMyCircleList } = useContext(ZK3Context)
     const address = useAddress();
     const sdk = useSDK()
     const [_signature, setSignature] = useState('')
@@ -70,8 +72,36 @@ function IdentityPage() {
         createIdentity(signature)
     }
 
+    const handleDisconnectIdentity = () => {
+        localStorage.removeItem("identity")
+        localStorage.removeItem("myCircleList")
+        setIdentity(null)
+        setMyCircleList([])
+        toast({
+            title: 'Identity Disconnected!',
+            description: 'Your Semaphore identity was just disconnected',
+            status: 'info',
+            duration: 5000,
+            isClosable: true,
+        })
+    }
+
     return (
         <>
+            <Flex justifyContent='end'>
+                <Menu>
+                    <MenuButton
+                        as={IconButton}
+                        aria-label='settings'
+                        icon={<SettingsIcon />} />
+                    <MenuList>
+                        <Link href="/">
+                            <MenuItem onClick={handleDisconnectIdentity}>Disconnect Identity</MenuItem>
+                        </Link>
+                    </MenuList>
+                </Menu>
+            </Flex>
+
             <Text align='center' as="b" fontSize="5xl">
                 Identity
             </Text>

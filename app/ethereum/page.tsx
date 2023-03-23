@@ -1,6 +1,6 @@
 'use client'
 
-import { Divider, Flex, Text, Spacer, Button } from "@chakra-ui/react"
+import { Divider, Flex, Text, Spacer, Button, Menu, IconButton, MenuButton, MenuItem, MenuList, useToast } from "@chakra-ui/react"
 import { useContext, useState, useEffect } from 'react'
 import Link from "next/link"
 import { useAddress } from "@thirdweb-dev/react";
@@ -10,6 +10,7 @@ import EthActionList from './EthActionList'
 import MyProofList from "./MyProofList";
 import ZK3Context from "../../context/ZK3Context"
 import { useQuery, gql } from '@apollo/client';
+import { SettingsIcon } from "@chakra-ui/icons";
 
 interface circle {
     id: string,
@@ -20,8 +21,9 @@ interface circle {
 }
 
 function EthereumGroupPage() {
-    const { _identity, setMyCircleList, _myCircleList } = useContext(ZK3Context)
+    const { _identity, setMyCircleList, _myCircleList, setIdentity } = useContext(ZK3Context)
     const address = useAddress();
+    const toast = useToast()
 
     //console.log(address, _identity)
     const GET_CIRCLES = gql`
@@ -40,8 +42,35 @@ function EthereumGroupPage() {
 
     const commitment = new Identity(_identity?.toString()).getCommitment()
 
+    const handleDisconnectIdentity = () => {
+        localStorage.removeItem("identity")
+        localStorage.removeItem("myCircleList")
+        setIdentity(null)
+        setMyCircleList([])
+        toast({
+            title: 'Identity Disconnected!',
+            description: 'Your Semaphore identity was just disconnected',
+            status: 'info',
+            duration: 5000,
+            isClosable: true,
+        })
+    }
+
     return (
         <>
+            <Flex justifyContent='end'>
+                <Menu>
+                    <MenuButton
+                        as={IconButton}
+                        aria-label='settings'
+                        icon={<SettingsIcon />} />
+                    <MenuList>
+                        <Link href="/">
+                            <MenuItem onClick={handleDisconnectIdentity}>Disconnect Identity</MenuItem>
+                        </Link>
+                    </MenuList>
+                </Menu>
+            </Flex>
             <Text align='center' as="b" fontSize="5xl">
                 EVM Group
             </Text>

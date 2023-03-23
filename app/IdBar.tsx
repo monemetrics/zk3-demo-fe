@@ -1,16 +1,17 @@
 'use client'
 
-import React from 'react'
+import React, { useContext } from 'react'
 import { Box, Text } from '@chakra-ui/layout'
-import useLensUser from "../lib/auth/useLensUser";
+import ZK3Context from '../context/ZK3Context'
 
-function IdBar(props: { ensName: string }) {
-    const { isSignedInQuery, profileQuery } = useLensUser();
+function IdBar() {
+    const { _identityLinkedEOA } = useContext(ZK3Context)
     return (
         <>
-            <Box p='2' borderWidth='1px' borderRadius='lg' maxW='sm' alignSelf='center' px='28' boxShadow='md'>
-                <Text align='center' fontWeight='bold' fontSize='28' textColor='#002add'>
-                    {isSignedInQuery && profileQuery?.data?.defaultProfile?.name}
+            <Text align='center'>Identity Linked EOA:</Text>
+            <Box p='2' borderWidth='1px' borderRadius='lg' maxW='lg' alignSelf='center' px='2' boxShadow='md'>
+                <Text align='center' fontSize='18' textColor='#002add'>
+                    {_identityLinkedEOA ? _identityLinkedEOA : "No Identity Linked"}
                 </Text>
             </Box>
         </>

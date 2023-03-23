@@ -1,6 +1,6 @@
 'use client'
 
-import { Divider, Flex, Text, Spacer, Button, IconButton, Menu, MenuButton, MenuItem, MenuList, useToast } from "@chakra-ui/react"
+import { Divider, Flex, Text, Spacer, Button, IconButton, Menu, MenuButton, MenuItem, MenuList, useToast, Modal, ModalBody, ModalCloseButton, ModalContent, ModalHeader, ModalOverlay, useDisclosure } from "@chakra-ui/react"
 import { useContext } from 'react'
 import Link from "next/link"
 import { useAddress } from "@thirdweb-dev/react";
@@ -8,17 +8,20 @@ import IdBar from "../IdBar"
 import LensActionList from "./LensActionList"
 import LogsContext from "../../context/LogsContext"
 import ZK3Context from "../../context/ZK3Context"
-import { SettingsIcon } from "@chakra-ui/icons";
+import { InfoIcon, SettingsIcon } from "@chakra-ui/icons";
 
 function LensGroupPage() {
     const { setLogs } = useContext(LogsContext)
-    const { _identity, setIdentity, setMyCircleList } = useContext(ZK3Context)
+    const { _identity, setIdentity, setMyCircleList, setIdentityLinkedEOA } = useContext(ZK3Context)
     const address = useAddress();
     const toast = useToast()
+    const { isOpen, onOpen, onClose } = useDisclosure()
 
     const handleDisconnectIdentity = () => {
         localStorage.removeItem("identity")
         localStorage.removeItem("myCircleList")
+        localStorage.removeItem("identityLinkedEOA")
+        setIdentityLinkedEOA(null)
         setIdentity(null)
         setMyCircleList([])
         toast({
@@ -32,9 +35,10 @@ function LensGroupPage() {
 
     return (
         <>
-        <Flex justifyContent='end'>
+            <Flex justifyContent='end'>
                 <Menu>
                     <MenuButton
+                        variant='ghost'
                         as={IconButton}
                         aria-label='settings'
                         icon={<SettingsIcon />} />
@@ -45,10 +49,15 @@ function LensGroupPage() {
                     </MenuList>
                 </Menu>
             </Flex>
-            <Text align='center' as="b" fontSize="5xl">
-                Lens Group
-            </Text>
-            {/*<IdBar ensName="zk3.eth"></IdBar>*/}
+            
+            <Flex justifyContent='center'>
+                <Text align='center' as="b" fontSize="5xl">
+                    Lens Group
+                </Text>
+                <IconButton onClick={onOpen} variant='ghost' aria-label="info" icon={<InfoIcon color='#002add' />}></IconButton>
+            </Flex>
+
+            <IdBar />
 
             <Text align='center' pt="2" fontSize="md">
                 Please select an action to perform in the Lens Group
@@ -69,6 +78,19 @@ function LensGroupPage() {
                     Back
                 </Button>
             </Link>
+
+            <Modal isOpen={isOpen} onClose={onClose} isCentered>
+                <ModalOverlay />
+                <ModalContent>
+                    <ModalHeader>Information about the Lens Group</ModalHeader>
+                    <ModalCloseButton />
+                    <ModalBody>
+                        <Text>
+                            The Lens Group allows you to publish Lens Posts or Comments with an attached ZK3 Proof. Your Lens Publication will be attributed to the profile displayed in the top right corner of the dApp. (Can be a Lens Profile held by a different wallet than the one you used to generate your Indentity)
+                        </Text>
+                    </ModalBody>
+                </ModalContent>
+            </Modal>
         </>
     )
 }

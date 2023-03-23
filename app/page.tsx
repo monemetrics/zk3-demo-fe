@@ -1,7 +1,7 @@
 'use client'
 
-import { Divider, Flex, Text, Spacer, Button, useToast, IconButton, Menu, MenuButton, MenuList, MenuItem } from "@chakra-ui/react"
-import { SettingsIcon } from "@chakra-ui/icons"
+import { Divider, Flex, Text, Spacer, Button, useToast, IconButton, Menu, MenuButton, MenuList, MenuItem, Modal, ModalBody, ModalCloseButton, ModalContent, ModalHeader, ModalOverlay, useDisclosure } from "@chakra-ui/react"
+import { SettingsIcon, InfoIcon } from "@chakra-ui/icons"
 import { Identity } from '@semaphore-protocol/identity'
 import { useState, useRef, useCallback, useEffect, useContext } from 'react'
 import { useAddress, useSDK } from "@thirdweb-dev/react";
@@ -16,10 +16,11 @@ import Link from "next/link";
 function IdentityPage() {
     const toast = useToast()
     const { setLogs } = useContext(LogsContext)
-    const { _lensAuthToken, _identity, setIdentity, setMyCircleList } = useContext(ZK3Context)
+    const { _lensAuthToken, _identity, setIdentity, setMyCircleList, _identityLinkedEOA, setIdentityLinkedEOA } = useContext(ZK3Context)
     const address = useAddress();
     const sdk = useSDK()
     const [_signature, setSignature] = useState('')
+    const { isOpen, onOpen, onClose } = useDisclosure()
 
     const GET_CIRCLES = gql`
         query GetCircles {
@@ -34,26 +35,17 @@ function IdentityPage() {
     const { loading, error, data: _circleData } = useQuery(GET_CIRCLES)
     const [circleData, setCircleData] = useState()
 
-    const fetchGroups = async () => {
-        const identityString = localStorage.getItem("identity")
-        if (!identityString)
-            return
-        const commitment = new Identity(identityString).getCommitment()
-        setCircleData(_circleData)
-        console.log('circleData: ', circleData)
-
-    }
-
     const createIdentity = useCallback(async (signature: any) => {
         console.log(signature)
         const identity = new Identity(signature)
 
         setIdentity(identity)
-
         localStorage.setItem("identity", identity.toString())
 
+        setIdentityLinkedEOA(address!)
+        localStorage.setItem("identityLinkedEOA", address!)
+        console.log('identityLinkedEOA', address!)
 
-        //setLogs("Your new Semaphore identity was just created 🎉")
         toast({
             title: 'Identity Created!',
             description: 'Your new Semaphore identity was just created 🎉',
@@ -75,6 +67,8 @@ function IdentityPage() {
     const handleDisconnectIdentity = () => {
         localStorage.removeItem("identity")
         localStorage.removeItem("myCircleList")
+        localStorage.removeItem("identityLinkedEOA")
+        setIdentityLinkedEOA(null)
         setIdentity(null)
         setMyCircleList([])
         toast({
@@ -91,6 +85,7 @@ function IdentityPage() {
             <Flex justifyContent='end'>
                 <Menu>
                     <MenuButton
+                        variant='ghost'
                         as={IconButton}
                         aria-label='settings'
                         icon={<SettingsIcon />} />
@@ -102,10 +97,14 @@ function IdentityPage() {
                 </Menu>
             </Flex>
 
-            <Text align='center' as="b" fontSize="5xl">
-                Identity
-            </Text>
-            {/*<IdBar ensName="zk3.eth"></IdBar>*/}
+            <Flex justifyContent='center'>
+                <Text align='center' as="b" fontSize="5xl">
+                    Identity
+                </Text>
+                <IconButton onClick={onOpen} variant='ghost' aria-label="info" icon={<InfoIcon color='#002add' />}></IconButton>
+            </Flex>
+
+            <IdBar />
 
             <Text align='center' pt="2" fontSize="md">
                 {_identity && address ? 'Identity successfully connected!' : (address) ? 'In order to generate a new Identity you will need to sign a message' : 'Please connect your wallet'}
@@ -130,6 +129,17 @@ function IdentityPage() {
                     <ConnectWallet />
                 )}
             </Flex>
+
+            <Modal isOpen={isOpen} onClose={onClose} isCentered>
+                <ModalOverlay />
+                <ModalContent>
+                    <ModalHeader>Information about ZK3 Identities</ModalHeader>
+                    <ModalCloseButton />
+                    <ModalBody>
+                        <Text>ZK3 Identities are deterministically generated from your EOA signature. This means that you can have one identity per wallet and they are linked. Your private identity data (trapdoor and nullifier used for signatures) is stored locally on your machine. Only the Identity Commitment (like a public key) is stored on-chain as leaves on a merkle tree.</Text>
+                    </ModalBody>
+                </ModalContent>
+            </Modal>
         </>
     )
 }

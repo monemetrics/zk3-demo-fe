@@ -138,6 +138,13 @@ export function useCreateComment() {
             ]
         )
 
+        const referenceModuleData = ethers.utils.AbiCoder.prototype.encode(
+            ["uint256", "uint256", "uint256", "uint256", "uint256[8]"],
+            [hashedPostBody, proof?.nullifierHash, selectedProof.id.toString(), proof?.externalNullifier, proof?.proof]
+        )
+        
+        
+
         console.log("referenceModuleInitData", referenceModuleInitData)
         console.log("referenceModule", referenceModule)
         console.log("externalNullifier", proof?.externalNullifier)
@@ -209,7 +216,8 @@ export function useCreateComment() {
             collectModule,
             collectModuleInitData: collectModuleInitData,
             referenceModule: referenceModule, // add address of LensZK3ReferenceModule here
-            referenceModuleInitData: referenceModuleInitData // add ABI encoded proof here
+            referenceModuleInitData: referenceModuleInitData, // add ABI encoded proof here
+            referenceModuleData: referenceModuleData
         })
         console.log("result", result)
     }

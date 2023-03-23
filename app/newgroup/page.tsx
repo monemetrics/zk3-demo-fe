@@ -1,6 +1,6 @@
 'use client'
 
-import { Divider, Flex, Text, Spacer, Button } from "@chakra-ui/react"
+import { Divider, Flex, Text, Spacer, Button, IconButton, Menu, MenuButton, MenuItem, MenuList, useToast } from "@chakra-ui/react"
 import { useContext } from 'react'
 import Link from "next/link"
 import { useAddress } from "@thirdweb-dev/react"
@@ -8,14 +8,43 @@ import IdBar from "../IdBar"
 import LogsContext from "../../context/LogsContext"
 import NewGroupList from "./NewGroupList"
 import ZK3Context from "../../context/ZK3Context"
+import { SettingsIcon } from "@chakra-ui/icons"
 
 function NewGroupPage() {
     const { setLogs } = useContext(LogsContext)
-    const { _identity } = useContext(ZK3Context)
+    const { _identity, setIdentity, setMyCircleList } = useContext(ZK3Context)
     const address = useAddress()
+    const toast = useToast()
+
+    const handleDisconnectIdentity = () => {
+        localStorage.removeItem("identity")
+        localStorage.removeItem("myCircleList")
+        setIdentity(null)
+        setMyCircleList([])
+        toast({
+            title: 'Identity Disconnected!',
+            description: 'Your Semaphore identity was just disconnected',
+            status: 'info',
+            duration: 5000,
+            isClosable: true,
+        })
+    }
 
     return (
         <>
+        <Flex justifyContent='end'>
+                <Menu>
+                    <MenuButton
+                        as={IconButton}
+                        aria-label='settings'
+                        icon={<SettingsIcon />} />
+                    <MenuList>
+                        <Link href="/">
+                            <MenuItem onClick={handleDisconnectIdentity}>Disconnect Identity</MenuItem>
+                        </Link>
+                    </MenuList>
+                </Menu>
+            </Flex>
             <Text align='center' as="b" fontSize="5xl">
                 New Group
             </Text>

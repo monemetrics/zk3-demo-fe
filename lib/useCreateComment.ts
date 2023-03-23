@@ -16,7 +16,7 @@ import { useEffect, useContext } from "react"
 import ZK3Context from "../context/ZK3Context"
 import useZK3Proof from "./useZK3Proof"
 import { keccak256 } from "ethers/lib/utils"
-import { BigNumber, ethers } from "ethers"
+import { BigNumber, BigNumberish, ethers } from "ethers"
 
 interface circle {
     id: string
@@ -26,17 +26,19 @@ interface circle {
     contentURI: string
 }
 
-type CreatePostArgs = {
+type CreateCommentArgs = {
     image: File | null
     title: string
     description: string
     content: string
     selectedProof: circle | undefined
+    profileIdPointed: BigNumber
+    pubIdPointed: BigNumber
 }
 
 const PINATA_JWT = process.env.PINATA_JWT
 
-export function useCreatePost() {
+export function useCreateComment() {
     const { mutateAsync: requestTypedData } = useCreatePostTypedDataMutation()
     const { mutateAsync: uploadToIpfs } = useStorageUpload()
     const { profileQuery } = useLensUser()
@@ -64,7 +66,15 @@ export function useCreatePost() {
         // return res.json()
     }
 
-    async function createPost({ image, title, description, content, selectedProof }: CreatePostArgs) {
+    async function createComment({
+        image,
+        title,
+        description,
+        content,
+        selectedProof,
+        profileIdPointed,
+        pubIdPointed
+    }: CreateCommentArgs) {
         console.log("createPost", image, title, description, content, selectedProof)
         // 0. Login
         await loginUser()
@@ -128,6 +138,13 @@ export function useCreatePost() {
             ]
         )
 
+        const referenceModuleData = ethers.utils.AbiCoder.prototype.encode(
+            ["uint256", "uint256", "uint256", "uint256", "uint256[8]"],
+            [hashedPostBody, proof?.nullifierHash, selectedProof.id.toString(), proof?.externalNullifier, proof?.proof]
+        )
+        
+        
+
         console.log("referenceModuleInitData", referenceModuleInitData)
         console.log("referenceModule", referenceModule)
         console.log("externalNullifier", proof?.externalNullifier)
@@ -190,23 +207,20 @@ export function useCreatePost() {
             proof?.proof
         )
         console.log("isValid", isValid)
-        const result = await lensHubContract.call("post", {
+        console.log('points to: ', profileIdPointed, pubIdPointed)
+        const result = await lensHubContract.call("comment", {
             profileId: profileQuery.data?.defaultProfile?.id,
+            profileIdPointed,
+            pubIdPointed,
             contentURI: postMetadataIpfsUrl,
             collectModule,
             collectModuleInitData: collectModuleInitData,
             referenceModule: referenceModule, // add address of LensZK3ReferenceModule here
-            referenceModuleInitData: referenceModuleInitData // add ABI encoded proof here
+            referenceModuleInitData: referenceModuleInitData, // add ABI encoded proof here
+            referenceModuleData: referenceModuleData
         })
         console.log("result", result)
-
-        // uint256 profileId;
-        // string contentURI;
-        // address collectModule;
-        // bytes collectModuleInitData;
-        // address referenceModule;
-        // bytes referenceModuleInitData;
     }
 
-    return useMutation(createPost)
+    return useMutation(createComment)
 }

@@ -1,19 +1,22 @@
 'use client'
 
-import { Divider, Flex, Text, Spacer, Button, useToast } from "@chakra-ui/react"
+import { Divider, Flex, Text, Spacer, Button, useToast, IconButton, Menu, MenuButton, MenuList, MenuItem } from "@chakra-ui/react"
+import { SettingsIcon } from "@chakra-ui/icons"
 import { Identity } from '@semaphore-protocol/identity'
 import { useState, useRef, useCallback, useEffect, useContext } from 'react'
 import { useAddress, useSDK } from "@thirdweb-dev/react";
+import { ConnectWallet } from "@thirdweb-dev/react";
 import IdBar from "./IdBar"
 import GroupList from "./GroupList"
 import LogsContext from "../context/LogsContext"
 import ZK3Context from "../context/ZK3Context"
 import { useQuery, gql } from '@apollo/client';
+import Link from "next/link";
 
 function IdentityPage() {
     const toast = useToast()
     const { setLogs } = useContext(LogsContext)
-    const { _lensAuthToken, _identity, setIdentity } = useContext(ZK3Context)
+    const { _lensAuthToken, _identity, setIdentity, setMyCircleList } = useContext(ZK3Context)
     const address = useAddress();
     const sdk = useSDK()
     const [_signature, setSignature] = useState('')
@@ -69,32 +72,62 @@ function IdentityPage() {
         createIdentity(signature)
     }
 
+    const handleDisconnectIdentity = () => {
+        localStorage.removeItem("identity")
+        localStorage.removeItem("myCircleList")
+        setIdentity(null)
+        setMyCircleList([])
+        toast({
+            title: 'Identity Disconnected!',
+            description: 'Your Semaphore identity was just disconnected',
+            status: 'info',
+            duration: 5000,
+            isClosable: true,
+        })
+    }
+
     return (
         <>
+            <Flex justifyContent='end'>
+                <Menu>
+                    <MenuButton
+                        as={IconButton}
+                        aria-label='settings'
+                        icon={<SettingsIcon />} />
+                    <MenuList>
+                        <Link href="/">
+                            <MenuItem onClick={handleDisconnectIdentity}>Disconnect Identity</MenuItem>
+                        </Link>
+                    </MenuList>
+                </Menu>
+            </Flex>
+
             <Text align='center' as="b" fontSize="5xl">
                 Identity
             </Text>
             {/*<IdBar ensName="zk3.eth"></IdBar>*/}
 
             <Text align='center' pt="2" fontSize="md">
-                {_identity ? 'Identity successfully connected!' : 'In order to generate a new Identity you will need to sign a message'}
+                {_identity && address ? 'Identity successfully connected!' : (address) ? 'In order to generate a new Identity you will need to sign a message' : 'Please connect your wallet'}
             </Text>
             <Spacer />
             {_identity && <Text align='center' pt="2" fontSize="lg" fontWeight='bold'> My groups:</Text>}
             <Flex flexDirection='column' p="6" alignItems='center' borderColor='#1e2d52' borderWidth='1px' borderRadius='12px'>
                 <Spacer />
 
-                {(_identity) ? (
+                {(_identity && address) ? (
                     <GroupList></GroupList>
-                ) : (
+                ) : (address) ? (
                     <Button
                         fontWeight="bold"
                         justifyContent="center"
-                        colorScheme="primary"
+                        variant='solid' colorScheme='blue' color='#fff' bgColor='#002add'
                         px="4"
-                        onClick={address ? signIdentityMessage : () => { }}>
-                        {address ? 'Generate Identity' : 'Please Connect your wallet'}
+                        onClick={signIdentityMessage}>
+                        {'Generate Identity'}
                     </Button>
+                ) : (
+                    <ConnectWallet />
                 )}
             </Flex>
         </>

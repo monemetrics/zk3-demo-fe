@@ -6,10 +6,11 @@ import {
   ChainId,
   MediaRenderer,
 } from "@thirdweb-dev/react";
-import React from "react";
+import React, { useEffect, useContext } from "react";
 import useLensUser from "../../lib/auth/useLensUser";
 import useLogin from "../../lib/auth/useLogin";
-import { Button, HStack, Text } from "@chakra-ui/react";
+import { Button, HStack, Text, Box } from "@chakra-ui/react";
+import ZK3Context from "../../context/ZK3Context";
 type Props = {};
 
 export default function LensSignInButton({ }: Props) {
@@ -18,6 +19,17 @@ export default function LensSignInButton({ }: Props) {
   const [, switchNetwork] = useNetwork(); // Function to switch the network.
   const { isSignedInQuery, profileQuery } = useLensUser();
   const { mutate: requestLogin } = useLogin();
+  const { _lensAuthToken, setLensAuthToken } = useContext(ZK3Context);
+
+  useEffect(() => {
+    const handleStorage = () => {
+      isSignedInQuery.refetch()
+      setLensAuthToken(JSON.parse(localStorage.getItem("LH_STORAGE_KEY")!).accessToken)
+    }
+
+    window.addEventListener('storage', handleStorage)
+    return () => window.removeEventListener('storage', handleStorage)
+  }, [])
 
   // 1. User needs to connect their wallet
   if (!address) {
@@ -43,7 +55,7 @@ export default function LensSignInButton({ }: Props) {
 
   // If the user is not signed in, we need to request a login
   if (!isSignedInQuery.data) {
-    return <Button colorScheme='green' onClick={() => requestLogin()}>Sign in with Lens</Button>;
+    return <Button variant='solid' colorScheme='green' color='#00501e' bgColor='#abfe2c' onClick={() => requestLogin()}>Sign in with Lens</Button>;
   }
 
   // Loading their profile information
@@ -53,7 +65,7 @@ export default function LensSignInButton({ }: Props) {
 
   // If it's done loading and there's no default profile
   if (!profileQuery.data?.defaultProfile) {
-    return <div>No Lens Profile.</div>;
+    return <Box bgColor='#fff' p='1' borderRadius='8px' mr='2'>No Lens Profile</Box>;
   }
 
   // If it's done loading and there's a default profile

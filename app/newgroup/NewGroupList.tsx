@@ -106,7 +106,7 @@ function NewGroupList() {
             <Flex flexDirection='column' width='md' gap='2'>
                 {availableGroupData.map((entry: { name: string, description: string }) => {
                     return (
-                        <div onClick={() => {
+                        <div key={entry.name} onClick={() => {
                             handleAddNewGroup(entry.name)
                         }}>
                             <PrimaryCard name={entry.name} logo={entry.name} text={entry.description} />

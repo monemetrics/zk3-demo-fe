@@ -18,14 +18,16 @@ function GroupList() {
     `;
 
     const [groupData, setGroupData] = useState<string[]>([])
-    const { getActiveGroups } = useContext(ZK3Context)
+    const { getActiveGroups, _lensAuthToken } = useContext(ZK3Context)
 
     //const { loading, error, data } = useQuery(GET_CIRCLES);
 
     useEffect(() => {
         //console.log(getActiveGroups())
         setGroupData(getActiveGroups().concat(['Ethereum']))
-    }, [])
+        if (_lensAuthToken && !getActiveGroups().includes('Lens'))
+            setGroupData(getActiveGroups().concat(['Lens']).concat(['Ethereum']))
+    }, [_lensAuthToken])
 
     return (
         <>

@@ -35,16 +35,16 @@ function IdentityPage() {
     const { loading, error, data: _circleData } = useQuery(GET_CIRCLES)
     const [circleData, setCircleData] = useState()
 
-    const createIdentity = useCallback(async (signature: any) => {
+    const createIdentity = useCallback(async (signature: any, addy: string) => {
         console.log(signature)
         const identity = new Identity(signature)
 
         setIdentity(identity)
         localStorage.setItem("identity", identity.toString())
 
-        setIdentityLinkedEOA(address!)
-        localStorage.setItem("identityLinkedEOA", address!)
-        console.log('identityLinkedEOA', address!)
+        setIdentityLinkedEOA(addy)
+        localStorage.setItem("identityLinkedEOA", addy)
+        console.log('identityLinkedEOA', addy)
 
         toast({
             title: 'Identity Created!',
@@ -55,13 +55,13 @@ function IdentityPage() {
         })
     }, [])
 
-    const signIdentityMessage = async () => {
+    const signIdentityMessage = async (addy: string) => {
         //console.log('attempt sign')
         const signature = await sdk?.wallet.sign('gm zk3 frens')
         if (!signature)
             throw new Error('No signature!')
         setSignature(signature)
-        createIdentity(signature)
+        createIdentity(signature, addy)
     }
 
     const handleDisconnectIdentity = () => {
@@ -122,7 +122,7 @@ function IdentityPage() {
                         justifyContent="center"
                         variant='solid' colorScheme='blue' color='#fff' bgColor='#002add'
                         px="4"
-                        onClick={signIdentityMessage}>
+                        onClick={() => {signIdentityMessage(address)}}>
                         {'Generate Identity'}
                     </Button>
                 ) : (

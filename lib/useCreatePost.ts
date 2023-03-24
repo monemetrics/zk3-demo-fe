@@ -4,6 +4,7 @@ import { PublicationMainFocus, useCreatePostTypedDataMutation } from "../graphql
 import useLensUser from "./auth/useLensUser"
 import { signTypedDataWithOmmittedTypename, splitSignature } from "./helpers"
 import { v4 as uuidv4 } from "uuid"
+import { useToast } from "@chakra-ui/react"
 import {
     LENS_MUMBAI_CONTRACT_ABI,
     LENS_MUMBAI_CONTRACT_ADDRESS,
@@ -46,6 +47,7 @@ export function useCreatePost() {
     const { generateFullProof } = useZK3Proof()
     const { contract: lensHubContract, isLoading, error } = useContract(LENS_SANDBOX_CONTRACT_ADDRESS)
     const { mutateAsync, isLoading: isTxLoading, error: txError } = useContractWrite(lensHubContract, "post")
+    const toast = useToast()
 
     async function uploadJSONToIPFS(val: string) {
         // upload to ipfs.io
@@ -199,6 +201,13 @@ export function useCreatePost() {
             referenceModuleInitData: referenceModuleInitData // add ABI encoded proof here
         })
         console.log("result", result)
+        toast({
+            title: `Lens Post Created!`,
+            description: `https://mumbai.polygonscan.com/tx/${result.receipt.transactionHash}`,
+            status: 'success',
+            duration: 100000,
+            isClosable: true,
+          })
 
         // uint256 profileId;
         // string contentURI;

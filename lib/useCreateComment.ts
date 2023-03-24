@@ -17,6 +17,7 @@ import ZK3Context from "../context/ZK3Context"
 import useZK3Proof from "./useZK3Proof"
 import { keccak256 } from "ethers/lib/utils"
 import { BigNumber, BigNumberish, ethers } from "ethers"
+import { useToast } from "@chakra-ui/react"
 
 interface circle {
     id: string
@@ -48,6 +49,7 @@ export function useCreateComment() {
     const { generateFullProof } = useZK3Proof()
     const { contract: lensHubContract, isLoading, error } = useContract(LENS_SANDBOX_CONTRACT_ADDRESS)
     const { mutateAsync, isLoading: isTxLoading, error: txError } = useContractWrite(lensHubContract, "post")
+    const toast = useToast()
 
     async function uploadJSONToIPFS(val: string) {
         // upload to ipfs.io
@@ -220,6 +222,13 @@ export function useCreateComment() {
             referenceModuleData: referenceModuleData
         })
         console.log("result", result)
+        toast({
+            title: `Lens Post Created!`,
+            description: `https://mumbai.polygonscan.com/tx/${result.receipt.transactionHash}`,
+            status: 'success',
+            duration: 100000,
+            isClosable: true,
+          })
     }
 
     return useMutation(createComment)

@@ -42,9 +42,9 @@ export default function LensSignInButton({ }: Props) {
   // 2. User needs to switch network to Polygon
   if (isOnWrongNetwork) {
     return (
-      <button onClick={() => switchNetwork?.(ChainId.Mumbai)}>
+      <Button variant='solid' colorScheme='black' color='#151c2b' bgColor='#fff' onClick={() => switchNetwork?.(ChainId.Mumbai)}>
         Switch Network
-      </button>
+      </Button>
     );
   }
 

@@ -34,7 +34,7 @@ function LensActionList() {
 
     return (
         <>
-            <Flex flexDirection='column' width='md' gap='2'>
+            <Flex flexDirection='column' width='md' gap='2' alignItems='center'>
                 <div onClick={onOpen}>
                     <PrimaryCard name='ZK3 enabled Lens Post' logo='Lens' text='Click to create a Lens post with an embedded ZK3 proof' />
                 </div>

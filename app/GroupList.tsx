@@ -31,7 +31,7 @@ function GroupList() {
 
     return (
         <>
-            <Flex flexDirection='column' width='md' gap='2'>
+            <Flex flexDirection='column' width='md' gap='2' alignItems='center'>
                 {groupData.map((entry: string) => {
                     return (
                         <Link key={entry} href={'/' + entry.toLowerCase()}>

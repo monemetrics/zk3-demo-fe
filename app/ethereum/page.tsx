@@ -61,7 +61,12 @@ function EthereumGroupPage() {
 
     return (
         <>
-            <Flex justifyContent='end'>
+            <Flex justifyContent='space-between' alignItems='center'>
+                <Link href='/'>
+                    <Button size={{ 'base': 'sm', 'sm': 'md' }} variant='solid' colorScheme='blue' color='#fff' bgColor='#002add'>
+                        Back
+                    </Button>
+                </Link>
                 <Menu>
                     <MenuButton
                         variant='ghost'
@@ -109,11 +114,6 @@ function EthereumGroupPage() {
                     <Text>Loading...</Text>
                 )}
             </Flex>
-            <Link href='/'>
-                <Button position='fixed' left='20' bottom='20' variant='solid' colorScheme='blue' color='#fff' bgColor='#002add'>
-                    Back
-                </Button>
-            </Link>
 
             <Modal isOpen={isOpen} onClose={onClose} isCentered>
                 <ModalOverlay />

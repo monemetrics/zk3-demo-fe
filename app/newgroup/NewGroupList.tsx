@@ -103,7 +103,7 @@ function NewGroupList() {
 
     return (
         <>
-            <Flex flexDirection='column' width='md' gap='2'>
+            <Flex flexDirection='column' width='md' gap='2' alignItems='center'>
                 {availableGroupData.map((entry: { name: string, description: string }) => {
                     return (
                         <div key={entry.name} onClick={() => {

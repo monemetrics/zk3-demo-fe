@@ -7,7 +7,7 @@ import EVMBalanceOfProof from './EVMBalanceOfProof';
 function EthActionList() {
     return (
         <>
-            <Flex flexDirection='column' width='md' gap='2'>
+            <Flex flexDirection='column' width='md' gap='2' alignItems='center'>
                 <EVMBalanceOfProof></EVMBalanceOfProof>
             </Flex>
         </>

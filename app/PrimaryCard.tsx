@@ -11,7 +11,9 @@ import plusIcon from '../public/plus.png'
 
 export default function PrimaryCard(props: { name: string, text: string, logo: string }) {
     return (
-        <Card _hover={{
+        <Card
+        width={{ base: "300px", sm: "400px" }}
+        _hover={{
             background: "white",
             color: "#002add",
             cursor: "pointer",

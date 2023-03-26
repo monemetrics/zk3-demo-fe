@@ -1,4 +1,4 @@
-import { Flex, Box, Spacer, Heading, Text, HStack } from "@chakra-ui/react"
+import { Flex, Box, Spacer, Heading, Text, HStack, Hide } from "@chakra-ui/react"
 import { useState, useEffect } from "react"
 import WalletButton from "./WalletButton"
 import Image from 'next/image'
@@ -17,9 +17,11 @@ export default function Navbar() {
                     </HStack>
                 </Box>
                 <Spacer />
-                <Box p='0' sx={{ position: 'absolute', width: '180px', marginLeft: 'auto', marginRight: 'auto', left: 0, right: 0 }}>
-                    <Heading size='lg' color={"whiteAlpha.900"} >ZK3 demo</Heading>
-                </Box>
+                <Hide breakpoint="(max-width: 480px)">
+                    <Box p='0'>
+                        <Heading size='lg' color={"whiteAlpha.900"} >ZK3 demo</Heading>
+                    </Box>
+                </Hide>
                 <Spacer />
                 <Box p='0'>
                     <LensSignInButton></LensSignInButton>

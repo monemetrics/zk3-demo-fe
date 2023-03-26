@@ -82,7 +82,7 @@ function IdentityPage() {
 
     return (
         <>
-            <Flex justifyContent='end'>
+            <Flex justifyContent='end' alignItems='center'>
                 <Menu>
                     <MenuButton
                         variant='ghost'
@@ -122,7 +122,7 @@ function IdentityPage() {
                         justifyContent="center"
                         variant='solid' colorScheme='blue' color='#fff' bgColor='#002add'
                         px="4"
-                        onClick={() => {signIdentityMessage(address)}}>
+                        onClick={() => { signIdentityMessage(address) }}>
                         {'Generate Identity'}
                     </Button>
                 ) : (

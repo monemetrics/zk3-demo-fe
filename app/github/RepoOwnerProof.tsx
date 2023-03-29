@@ -88,13 +88,17 @@ function RepoOwnerProof() {
         fetchOwnedRepos();
     }, [])
 
-    var REPO_OWNER_PROOF = gql`mutation CreateBalanceOfProof($identityCommitment: String!, $signature: String, $repoName: String!) {
-        createGithubRepoOwnerProof(identityCommitment: $identityCommitment, signature: $signature, repoName: $repoName)
-      } `;
+    var REPO_OWNER_PROOF = gql`
+        mutation CreateGithubRepoOwnerProof($identityCommitment: String!, $repoName: String!, $signature: String) {
+            createGithubRepoOwnerProof(
+                identityCommitment: $identityCommitment
+                repoName: $repoName
+                signature: $signature
+            )
+        }
+    `
 
-    const [mutateFunction, { data: authData }] = useMutation(REPO_OWNER_PROOF, {
-
-    });
+    const [mutateFunction, { data: authData }] = useMutation(REPO_OWNER_PROOF, {})
 
     const handleGenerateProof = async (e: any) => {
         // toDo: add erc20 support (currently only native tokens)

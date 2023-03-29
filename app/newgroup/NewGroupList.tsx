@@ -45,7 +45,7 @@ const availableGroupData = [
 function NewGroupList() {
     const { address } = useAccount()
     const { setLogs } = useContext(LogsContext)
-    const { setLensAuthToken } = useContext(ZK3Context)
+    const { setLensAuthToken, _identityLinkedEOA } = useContext(ZK3Context)
 
     const GET_LENS_CHALLENGE = gql`
         query Challenge {
@@ -96,6 +96,11 @@ function NewGroupList() {
         onOpen()
     }
 
+    const handleThirdPartyLogin = (name: string) => {
+        if (name == 'Github') {
+            window.open(`https://dev.zk3.io/webhooks/github?ethAddress=${_identityLinkedEOA}`)
+        }
+    }
     // const signChallengeMessage = async () => {
     //     if (activeModalName == 'Lens')
     //         await signMessageAsync()
@@ -129,7 +134,7 @@ function NewGroupList() {
                             color: "blue.500",
                             cursor: "pointer"
                         }}>
-                            <Button justifyContent="center">
+                            <Button justifyContent="center" onClick={() => handleThirdPartyLogin(activeModalName)}>
                                 <Center width='40px' height='40px' mr='40px'>
                                     <Image alt='logo' src={activeModalName == 'Github' ? githubLogo : activeModalName == 'Lens' ? lensLogo : activeModalName == 'Twitter' ? twitterLogo : activeModalName == 'Discord' ? discordLogo : activeModalName == 'Telegram' ? telegramLogo : activeModalName == 'Ethereum' ? ethereumLogo : plusIcon} height={40} width={40} style={{ objectFit: 'contain', }}></Image>
                                 </Center>

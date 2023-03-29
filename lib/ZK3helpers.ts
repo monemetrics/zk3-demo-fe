@@ -32,3 +32,36 @@ export async function createBalanceOfProofTypedData(
         value
     }
 }
+
+export async function createGithubRepoOwnerProofTypedData(
+    identityCommitment: string,
+    ethAddress: string,
+    repoName: string
+  ) {
+    const domain = {
+      name: "Zk3 Verify",
+      version: "1",
+      chainId: 80001,
+      verifyingContract: "0xCcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC",
+    };
+  
+    const types = {
+      BalanceOf: [
+        { name: "identityCommitment", type: "string" },
+        { name: "ethAddress", type: "address" },
+        { name: "repoName", type: "string" },
+      ],
+    };
+  
+    const value = {
+      identityCommitment,
+      ethAddress,
+      repoName,
+    };
+  
+    return {
+      types,
+      domain,
+      value,
+    };
+  }

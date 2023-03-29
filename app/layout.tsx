@@ -66,6 +66,29 @@ export default function RootLayout({
     const identityString = localStorage.getItem("identity")
     const lensAuthToken = localStorage.getItem("LH_STORAGE_KEY")
     const identityLinkedEOA = localStorage.getItem("identityLinkedEOA")
+    const graphqlQuery = {
+      "operationName": "Query",
+      "query": `query Query($service: String!) {
+        isConnected(service: $service)
+      }`,
+      "variables": { "service": "github" }
+  };
+    const fetchHasGithubGroup = async () => {
+      const response = await fetch('https://dev.zk3.io/graphql', {
+        method: 'POST',
+        headers: {
+          'x-access-token': `Bearer ${JSON.parse(lensAuthToken!).accessToken}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(graphqlQuery)
+      })
+      const data: { data: { isConnected: boolean } } = await response.json()
+      console.log('isConnected: ', data)
+      if (data.data.isConnected) {
+        setGithubAuthToken(data.data.isConnected.toString())
+        console.log('found github token')
+      }
+    }
 
     if (identityLinkedEOA) {
       setIdentityLinkedEOA(identityLinkedEOA)
@@ -75,6 +98,7 @@ export default function RootLayout({
     if (lensAuthToken) {
       setLensAuthToken(JSON.parse(lensAuthToken).accessToken)
       console.log('found lens token')
+      fetchHasGithubGroup();
     }
 
     if (identityString) {

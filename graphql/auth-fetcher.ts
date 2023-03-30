@@ -42,7 +42,7 @@ export const fetcher = <TData, TVariables>(
           headers: {
               "Content-Type": "application/json",
               ...options,
-              "x-access-token": `Bearer ${token}`,
+              "x-access-token": token ? `Bearer ${token}` : '',
               "Access-Control-Allow-Origin": "*"
           },
           body: JSON.stringify({

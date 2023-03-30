@@ -41,7 +41,7 @@ function MyProofList(props: { data: any }) {
         <>
             <Flex flexDirection='column' width='md' gap='2' alignItems='center'>
                 {myCircleList.map((e: circle) => {return (
-                    <PrimaryCard key={e.id} name={e.description} logo='Ethereum' text={e.contentURI} />
+                    <PrimaryCard key={e.id} name={e.description} logo={e.description.split('-')[0] == 'github' ? 'Github' : 'Ethereum'} text={e.contentURI} />
                 )})}
             </Flex>
         </>

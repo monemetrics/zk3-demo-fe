@@ -72,12 +72,26 @@ export function useCreatePost() {
         await loginUser()
 
         if (!(content && content.length > 0 && _identity && selectedProof)) {
+            toast({
+                title: `Missing proof parameters!`,
+                description: `Ensure your identity is connected! The content of the post cannot be empty and you must select a proof to publish the post.`,
+                status: 'error',
+                duration: 10000,
+                isClosable: true,
+              })
             return
         }
         console.log("setting proof args", _identity, selectedProof, content)
         const { proof, group } = (await generateFullProof(_identity, selectedProof, content))!
         console.log("proof", proof)
         console.log("group", group)
+        toast({
+            title: `Proof generation complete`,
+            description: `The ZK3 proof has been locally generated. Please standby while we upload the proof to the blockchain. Expect a transaction confirmation prompt in your wallet.`,
+            status: 'info',
+            duration: 30000,
+            isClosable: true,
+          })
         // 0. Upload the image to IPFS
         // const imageIpfsUrl = (await uploadToIpfs({ data: [image] }))[0]
 
@@ -181,6 +195,13 @@ export function useCreatePost() {
         if (rootOnChain.toString() !== group.root.toString()) {
             console.log("localRoot", group.root.toString())
             console.log("roots don't match")
+            toast({
+                title: `Error: Merkle Root mismatch!`,
+                description: `The locally generated proof is incompatible with the proof on-chain. This is likely caused by a bug in the circle data. Please reach out to us on discord for help`,
+                status: 'error',
+                duration: 30000,
+                isClosable: true,
+              })
             return
         }
         const isValid = await semaphoreZk3Contract.call(
@@ -192,6 +213,17 @@ export function useCreatePost() {
             proof?.proof
         )
         console.log("isValid", isValid)
+        if (!isValid) {
+            toast({
+                title: `Error: Invalid Proof!`,
+                description: `The proof you provided is invalid, despite matching Merkle roots. This error shouldn't happen unless something really unexpected happened. Please reach out to us on discord for help`,
+                status: 'error',
+                duration: 30000,
+                isClosable: true,
+                })
+            return
+        }
+
         const result = await lensHubContract.call("post", {
             profileId: profileQuery.data?.defaultProfile?.id,
             contentURI: postMetadataIpfsUrl,
@@ -205,7 +237,7 @@ export function useCreatePost() {
             title: `Lens Post Created!`,
             description: `https://mumbai.polygonscan.com/tx/${result.receipt.transactionHash}`,
             status: 'success',
-            duration: 100000,
+            duration: 300000,
             isClosable: true,
           })
 

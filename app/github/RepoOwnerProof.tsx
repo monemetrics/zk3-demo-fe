@@ -10,18 +10,6 @@ import {
     ModalBody,
     ModalCloseButton,
 } from '@chakra-ui/react'
-import {
-    FormControl,
-    FormLabel,
-    FormErrorMessage,
-    FormHelperText,
-    Textarea,
-    NumberInput,
-    NumberInputField,
-    NumberInputStepper,
-    NumberDecrementStepper,
-    NumberIncrementStepper
-} from '@chakra-ui/react'
 import PrimaryCard from '../PrimaryCard';
 import { useDisclosure } from '@chakra-ui/react';
 import { useBalance, useSDK, useAddress } from "@thirdweb-dev/react";
@@ -119,7 +107,7 @@ function RepoOwnerProof() {
                 console.log("response: ", response)
                 toast({
                     title: `RepoOwnerProof ${selectedRepo} successfully created!`,
-                    description: `https://mumbai.polygonscan.com/tx/${response.data.createBalanceOfProof}`,
+                    description: `https://mumbai.polygonscan.com/tx/${response.data.createGithubRepoOwnerProof}`,
                     status: 'success',
                     duration: 100000,
                     isClosable: true,

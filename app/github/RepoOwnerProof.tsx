@@ -22,6 +22,7 @@ import { FC } from 'react';
 import { ReactNode } from 'react';
 import clsx from 'clsx';
 import { CheckCircleIcon } from '@chakra-ui/icons';
+import { ZK3_GRAPHQL_ENDPOINT } from "../../const/contracts"
 
 interface ModuleProps {
     title: string;
@@ -61,11 +62,11 @@ function RepoOwnerProof() {
             "variables": { "ethAddress": _identityLinkedEOA }
         };
         const fetchOwnedRepos = async () => {
-            const response = await fetch('https://dev.zk3.io/graphql', {
-                method: 'POST',
+            const response = await fetch(ZK3_GRAPHQL_ENDPOINT, {
+                method: "POST",
                 headers: {
-                    'x-access-token': `Bearer ${_lensAuthToken}`,
-                    'Content-Type': 'application/json'
+                    "x-access-token": `Bearer ${_lensAuthToken}`,
+                    "Content-Type": "application/json"
                 },
                 body: JSON.stringify(graphqlQuery)
             })

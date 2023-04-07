@@ -11,6 +11,7 @@ import { ThirdwebProvider, ChainId } from "@thirdweb-dev/react";
 import Navbar from './Navbar'
 import theme from "../styles/index"
 import ZK3Context from '../context/ZK3Context';
+import { ZK3_GRAPHQL_ENDPOINT } from "../const/contracts"
 
 const MAINNET_API_URL = "https://api.lens.dev/"
 const MUMBAI_API_URL = "https://api-mumbai.lens.dev/"
@@ -19,16 +20,16 @@ const SANDBOX_API_URL = "https://api-sandbox-mumbai.lens.dev/"
 const url_in_use = SANDBOX_API_URL
 
 interface circle {
-  id: string,
-  members: string[],
-  name: string,
-  description: string,
-  contentURI: string
+    id: string
+    members: string[]
+    name: string
+    description: string
+    contentURI: string
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
     const zk3Link = new HttpLink({
-        uri: "https://dev.zk3.io/graphql"
+        uri: ZK3_GRAPHQL_ENDPOINT
     })
 
     // const httpLink = new HttpLink({uri: APIURL});
@@ -86,7 +87,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             variables: { service: "github" }
         }
         const fetchHasGithubGroup = async () => {
-            const response = await fetch("https://dev.zk3.io/graphql", {
+            const response = await fetch(ZK3_GRAPHQL_ENDPOINT, {
                 method: "POST",
                 headers: {
                     "x-access-token": `Bearer ${JSON.parse(lensAuthToken!).accessToken}`,

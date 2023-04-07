@@ -10,6 +10,7 @@ import {
     LENS_MUMBAI_CONTRACT_ADDRESS,
     LENS_SANDBOX_CONTRACT_ADDRESS,
     SEMAPHORE_ZK3_CONTRACT_ADDRESS,
+    ZK3_REFERENCE_MODULE_CONTRACT_ADDRESS,
     SEMAPHORE_ZK3_CONTRACT_ABI
 } from "../const/contracts"
 import useLogin from "./auth/useLogin"
@@ -75,10 +76,10 @@ export function useCreatePost() {
             toast({
                 title: `Missing proof parameters!`,
                 description: `Ensure your identity is connected! The content of the post cannot be empty and you must select a proof to publish the post.`,
-                status: 'error',
+                status: "error",
                 duration: 10000,
-                isClosable: true,
-              })
+                isClosable: true
+            })
             return
         }
         console.log("setting proof args", _identity, selectedProof, content)
@@ -88,10 +89,10 @@ export function useCreatePost() {
         toast({
             title: `Proof generation complete`,
             description: `The ZK3 proof has been locally generated. Please standby while we upload the proof to the blockchain. Expect a transaction confirmation prompt in your wallet.`,
-            status: 'info',
+            status: "info",
             duration: 30000,
-            isClosable: true,
-          })
+            isClosable: true
+        })
         // 0. Upload the image to IPFS
         // const imageIpfsUrl = (await uploadToIpfs({ data: [image] }))[0]
 
@@ -122,6 +123,10 @@ export function useCreatePost() {
                 traitType: "zk3Circle",
                 value: selectedProof.description
             })
+            postMetadata.attributes.push({
+                traitType: "zk3CircleId",
+                value: selectedProof.id
+            })
         }
 
         // const postMetadataIpfsUrl = await uploadToIpfs(JSON.stringify(postMetadata))
@@ -129,7 +134,7 @@ export function useCreatePost() {
 
         console.log("postMetadataIpfsUrl", postMetadataIpfsUrl)
 
-        const referenceModule = "0x69482d8265CE6EEF4a2E00591E801D03A755521E"
+        const referenceModule = ZK3_REFERENCE_MODULE_CONTRACT_ADDRESS
         const hashedPostBody = BigNumber.from(keccak256(Buffer.from(content)))
         const referenceModuleInitData = ethers.utils.AbiCoder.prototype.encode(
             ["bool", "bool", "uint256", "uint256", "uint256", "uint256", "uint256[8]"],
@@ -198,10 +203,10 @@ export function useCreatePost() {
             toast({
                 title: `Error: Merkle Root mismatch!`,
                 description: `The locally generated proof is incompatible with the proof on-chain. This is likely caused by a bug in the circle data. Please reach out to us on discord for help`,
-                status: 'error',
+                status: "error",
                 duration: 30000,
-                isClosable: true,
-              })
+                isClosable: true
+            })
             return
         }
         const isValid = await semaphoreZk3Contract.call(
@@ -217,10 +222,10 @@ export function useCreatePost() {
             toast({
                 title: `Error: Invalid Proof!`,
                 description: `The proof you provided is invalid, despite matching Merkle roots. This error shouldn't happen unless something really unexpected happened. Please reach out to us on discord for help`,
-                status: 'error',
+                status: "error",
                 duration: 30000,
-                isClosable: true,
-                })
+                isClosable: true
+            })
             return
         }
 
@@ -236,10 +241,10 @@ export function useCreatePost() {
         toast({
             title: `Lens Post Created!`,
             description: `https://mumbai.polygonscan.com/tx/${result.receipt.transactionHash}`,
-            status: 'success',
+            status: "success",
             duration: 300000,
-            isClosable: true,
-          })
+            isClosable: true
+        })
 
         // uint256 profileId;
         // string contentURI;

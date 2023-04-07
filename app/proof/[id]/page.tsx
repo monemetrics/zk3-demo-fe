@@ -1,21 +1,26 @@
 "use client"
 import { Box, Divider, Heading } from "@chakra-ui/react"
 import { ZK3_GRAPHQL_ENDPOINT } from "../../../const/contracts"
+import { useEffect, useState } from "react"
 
 export default function ProofPage({ params }: any) {
+    const [proofData, setProofData] = useState<any>(null)
     const fetchQGLProofData = async () => {
         const graphqlQuery = {
             operationName: "Query",
-            query: `query GetProof($id: Int!) { 
-                        proofs(where: {id: {_eq: $id}}) {
-                        id
-                        name
-                        description
-                        circle {
-                            name
-                            id
-                        }}}`,
-            variables: { id: params.id }
+            query: `query Query($proofId: ID!) {
+                proof(proofId: $proofId) {
+                  proofId
+                  circleId
+                  signal
+                  proof
+                  txHash
+                  createdAt
+                  updatedAt
+                  blockNumber
+                }
+              }`,
+            variables: { proofId: params.id }
         }
 
         const response = await fetch(ZK3_GRAPHQL_ENDPOINT, {
@@ -27,14 +32,19 @@ export default function ProofPage({ params }: any) {
             body: JSON.stringify(graphqlQuery)
         })
         const data: { data: { proof: any } } = await response.json()
-        console.log("proofData: ", data)
+        console.log("proofData: ", data.data)
+        setProofData(data.data.proof)
     }
-    const timestamp = "now"
-    const dummyCommitment = "0x0"
-    const dummyProofName = "Proof Name"
-    const dummyProofDescription = "Proof Description"
-    const dummyCircleName = "Circle Name"
-    const dummyContentURI = "ipfs://asdf.com"
+    // const timestamp = "now"
+    // const dummyCommitment = "0x0"
+    // const dummyProofName = "Proof Name"
+    // const dummyProofDescription = "Proof Description"
+    // const dummyCircleName = "Circle Name"
+    // const dummyContentURI = "ipfs://asdf.com"
+    useEffect(() => {
+        fetchQGLProofData()
+    }, [])
+    // fetchQGLProofData()
 
     return (
         <>
@@ -47,55 +57,47 @@ export default function ProofPage({ params }: any) {
             <Divider />
             <Box display="flex" flexDir="column" alignItems="start" justifyContent="end" mt={4}>
                 <Heading size="sm" color="#1e2d52">
-                    Name:{" "}
+                    circleId:{" "}
                 </Heading>
                 <Heading size="sm" p={2} ml={4} color="#1e2d52">
-                    {dummyProofName}
+                    {proofData?.circleId}
                 </Heading>
             </Box>
             <Divider />
             <Box display="flex" flexDir="column" alignItems="start" justifyContent="end" mt={4}>
                 <Heading size="sm" color="#1e2d52">
-                    Description:{" "}
+                    Signal:{" "}
                 </Heading>
                 <Heading size="sm" p={2} ml={4} color="#1e2d52">
-                    {dummyProofDescription}
+                    {proofData?.signal}
                 </Heading>
             </Box>
             <Divider />
+            <Divider />
             <Box display="flex" flexDir="column" alignItems="start" justifyContent="end" mt={4}>
-                <Heading size="sm" display="flex" color="#1e2d52">
-                    Identity Commitment:{" "}
+                <Heading size="sm" color="#1e2d52">
+                    proof:{" "}
                 </Heading>
                 <Heading size="sm" p={2} ml={4} color="#1e2d52">
-                    {dummyCommitment}
+                    {proofData?.proof}
                 </Heading>
             </Box>
             <Divider />
             <Box display="flex" flexDir="column" alignItems="start" justifyContent="end" mt={4}>
                 <Heading size="sm" color="#1e2d52">
-                    Content URI:{" "}
+                    CreatedAt:{" "}
                 </Heading>
                 <Heading size="sm" p={2} ml={4} color="#1e2d52">
-                    {dummyContentURI}
+                    {proofData?.createdAt}
                 </Heading>
             </Box>
             <Divider />
             <Box display="flex" flexDir="column" alignItems="start" justifyContent="end" mt={4}>
                 <Heading size="sm" color="#1e2d52">
-                    Timestamp:{" "}
+                    Tx Hash:{" "}
                 </Heading>
                 <Heading size="sm" p={2} ml={4} color="#1e2d52">
-                    {timestamp}
-                </Heading>
-            </Box>
-            <Divider />
-            <Box display="flex" flexDir="column" alignItems="start" justifyContent="end" mt={4}>
-                <Heading size="sm" color="#1e2d52">
-                    Merkle Root:{" "}
-                </Heading>
-                <Heading size="sm" p={2} ml={4} color="#1e2d52">
-                    0x0
+                    {proofData ? `https://mumbai.polygonscan.com/tx/${proofData.txHash}` : "loading..."}
                 </Heading>
             </Box>
             <a

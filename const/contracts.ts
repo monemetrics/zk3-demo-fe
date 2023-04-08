@@ -4,8 +4,10 @@ export const LENS_MAINNET_CONTRACT_ADDRESS = "0xDb46d1Dc155634FbC732f92E853b10B2
 export const LENS_MUMBAI_CONTRACT_ADDRESS = "0x60Ae865ee4C725cd04353b5AAb364553f56ceF82"
 
 export const LENS_SANDBOX_CONTRACT_ADDRESS = "0x7582177F9E536aB0b6c721e11f383C326F2Ad1D5"
-export const SEMAPHORE_ZK3_CONTRACT_ADDRESS = "0x7aF57c4d676d9ADFA1271688c0329bc116bfFA64"
-
+export const SEMAPHORE_ZK3_CONTRACT_ADDRESS = "0xba4cf9D716Ec42E2996Fc2e6b8B97854CD344Ce3"
+export const ZK3_REFERENCE_MODULE_CONTRACT_ADDRESS = "0x60a867ACF71d5c7cDf357d70CdC4FBAF7CcBdBb0"
+export const ZK3_GRAPHQL_ENDPOINT = "https://dev.zk3.io/graphql"
+// export const ZK3_GRAPHQL_ENDPOINT = "http://localhost:4000/graphql"
 
 // 2. export the contract abi
 export const LENS_MAINNET_CONTRACT_ABI = [
@@ -2431,6 +2433,12 @@ export const SEMAPHORE_ZK3_CONTRACT_ABI = [
                 internalType: "address",
                 name: "coordinator",
                 type: "address"
+            },
+            {
+                indexed: false,
+                internalType: "string",
+                name: "contentURI",
+                type: "string"
             }
         ],
         name: "CircleCreated",
@@ -2593,6 +2601,12 @@ export const SEMAPHORE_ZK3_CONTRACT_ABI = [
                 internalType: "uint256",
                 name: "signal",
                 type: "uint256"
+            },
+            {
+                indexed: false,
+                internalType: "uint256[8]",
+                name: "proof",
+                type: "uint256[8]"
             }
         ],
         name: "MembershipVerified",

@@ -9,6 +9,7 @@ import {
     LENS_MUMBAI_CONTRACT_ADDRESS,
     LENS_SANDBOX_CONTRACT_ADDRESS,
     SEMAPHORE_ZK3_CONTRACT_ADDRESS,
+    ZK3_REFERENCE_MODULE_CONTRACT_ADDRESS,
     SEMAPHORE_ZK3_CONTRACT_ABI
 } from "../const/contracts"
 import useLogin from "./auth/useLogin"
@@ -118,6 +119,10 @@ export function useCreateComment() {
                 traitType: "zk3Circle",
                 value: selectedProof.description
             })
+            postMetadata.attributes.push({
+                traitType: "zk3CircleId",
+                value: selectedProof.id
+            })
         }
 
         // const postMetadataIpfsUrl = await uploadToIpfs(JSON.stringify(postMetadata))
@@ -125,7 +130,7 @@ export function useCreateComment() {
 
         console.log("postMetadataIpfsUrl", postMetadataIpfsUrl)
 
-        const referenceModule = "0x69482d8265CE6EEF4a2E00591E801D03A755521E"
+        const referenceModule = ZK3_REFERENCE_MODULE_CONTRACT_ADDRESS
         const hashedPostBody = BigNumber.from(keccak256(Buffer.from(content)))
         const referenceModuleInitData = ethers.utils.AbiCoder.prototype.encode(
             ["bool", "bool", "uint256", "uint256", "uint256", "uint256", "uint256[8]"],
@@ -144,8 +149,6 @@ export function useCreateComment() {
             ["uint256", "uint256", "uint256", "uint256", "uint256[8]"],
             [hashedPostBody, proof?.nullifierHash, selectedProof.id.toString(), proof?.externalNullifier, proof?.proof]
         )
-        
-        
 
         console.log("referenceModuleInitData", referenceModuleInitData)
         console.log("referenceModule", referenceModule)
@@ -209,7 +212,7 @@ export function useCreateComment() {
             proof?.proof
         )
         console.log("isValid", isValid)
-        console.log('points to: ', profileIdPointed, pubIdPointed)
+        console.log("points to: ", profileIdPointed, pubIdPointed)
         const result = await lensHubContract.call("comment", {
             profileId: profileQuery.data?.defaultProfile?.id,
             profileIdPointed,
@@ -225,10 +228,10 @@ export function useCreateComment() {
         toast({
             title: `Lens Post Created!`,
             description: `https://mumbai.polygonscan.com/tx/${result.receipt.transactionHash}`,
-            status: 'success',
+            status: "success",
             duration: 100000,
-            isClosable: true,
-          })
+            isClosable: true
+        })
     }
 
     return useMutation(createComment)

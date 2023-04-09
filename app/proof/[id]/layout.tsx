@@ -8,7 +8,7 @@ export default function ProofLayout({ children }: { children: React.ReactNode })
 
     const handleSearchProof = () => {
         console.log(searchQuery)
-        window.open('http://localhost:3000/proof/' + searchQuery, '_self')
+        window.open('/proof/' + searchQuery, '_self')
     }
     return (
         <Box>
@@ -18,7 +18,7 @@ export default function ProofLayout({ children }: { children: React.ReactNode })
                 }}>
                 <InputGroup mb={4}>
                     <InputLeftAddon children='zk3://proof/' />
-                    <Input type='text' name='id' placeholder="Search..." onChange={(e) => setSearchQuery(e.target.value)}>
+                    <Input type='text' name='id' placeholder="Search proof id..." onChange={(e) => setSearchQuery(e.target.value)}>
 
                     </Input>
                     <InputRightElement onClick={handleSearchProof} children={<SearchIcon color='#002add' />} />

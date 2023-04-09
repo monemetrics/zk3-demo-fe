@@ -1,10 +1,12 @@
 "use client"
-import { Box, Divider, Heading } from "@chakra-ui/react"
+import { Box, Button, Divider, Heading } from "@chakra-ui/react"
 import { ZK3_GRAPHQL_ENDPOINT } from "../../../const/contracts"
 import { useEffect, useState } from "react"
 
 export default function ProofPage({ params }: any) {
     const [proofData, setProofData] = useState<any>(null)
+    const [hasTweeted, setHasTweeted] = useState<boolean>(false)
+    const [proof404, setProof404] = useState<boolean>(false)
     const fetchQGLProofData = async () => {
         const graphqlQuery = {
             operationName: "Query",
@@ -33,6 +35,8 @@ export default function ProofPage({ params }: any) {
         })
         const data: { data: { proof: any } } = await response.json()
         console.log("proofData: ", data.data)
+        if (data.data.proof == null)
+            setProof404(true)
         setProofData(data.data.proof)
     }
     // const timestamp = "now"
@@ -55,63 +59,83 @@ export default function ProofPage({ params }: any) {
                 </Heading>
             </Box>
             <Divider />
-            <Box display="flex" flexDir="column" alignItems="start" justifyContent="end" mt={4}>
-                <Heading size="sm" color="#1e2d52">
-                    circleId:{" "}
-                </Heading>
-                <Heading size="sm" p={2} ml={4} color="#1e2d52">
-                    {proofData?.circleId}
-                </Heading>
-            </Box>
-            <Divider />
-            <Box display="flex" flexDir="column" alignItems="start" justifyContent="end" mt={4}>
-                <Heading size="sm" color="#1e2d52">
-                    Signal:{" "}
-                </Heading>
-                <Heading size="sm" p={2} ml={4} color="#1e2d52">
-                    {proofData?.signal}
-                </Heading>
-            </Box>
-            <Divider />
-            <Divider />
-            <Box display="flex" flexDir="column" alignItems="start" justifyContent="end" mt={4}>
-                <Heading size="sm" color="#1e2d52">
-                    proof:{" "}
-                </Heading>
-                <Heading size="sm" p={2} ml={4} color="#1e2d52">
-                    {proofData?.proof}
-                </Heading>
-            </Box>
-            <Divider />
-            <Box display="flex" flexDir="column" alignItems="start" justifyContent="end" mt={4}>
-                <Heading size="sm" color="#1e2d52">
-                    CreatedAt:{" "}
-                </Heading>
-                <Heading size="sm" p={2} ml={4} color="#1e2d52">
-                    {proofData?.createdAt}
-                </Heading>
-            </Box>
-            <Divider />
-            <Box display="flex" flexDir="column" alignItems="start" justifyContent="end" mt={4}>
-                <Heading size="sm" color="#1e2d52">
-                    Tx Hash:{" "}
-                </Heading>
-                <Heading size="sm" p={2} ml={4} color="#1e2d52">
-                    {proofData ? `https://mumbai.polygonscan.com/tx/${proofData.txHash}` : "loading..."}
-                </Heading>
-            </Box>
-            <a
-                href="https://twitter.com/share?ref_src=twsrc%5Etfw"
-                className="twitter-share-button"
-                data-size="large"
-                data-text="testing..."
-                data-url="http://localhost:3000/proof/1234"
-                data-via="zk3org"
-                data-show-count="false"
-            >
-                Tweet
-            </a>
-            <script async src="https://platform.twitter.com/widgets.js"></script>
+            {!proofData ?
+                <Box mt={4} display='flex' justifyContent='center'>
+                    <Heading size='md'>{proof404 ? 'Proof not found' : 'Loading...'}</Heading>
+                </Box> 
+                :
+                <>
+                    <Box display="flex" flexDir="column" alignItems="start" justifyContent="end" mt={4}>
+                        <Heading size="sm" color="#1e2d52">
+                            CircleId:{" "}
+                        </Heading>
+                        <Heading size="sm" p={2} ml={4} color="#1e2d52" fontWeight='normal'>
+                            {proofData?.circleId}
+                        </Heading>
+                    </Box>
+                    <Divider />
+                    <Box display="flex" flexDir="column" alignItems="start" justifyContent="end" mt={4}>
+                        <Heading size="sm" color="#1e2d52">
+                            Signal:{" "}
+                        </Heading>
+                        <Heading size="sm" p={2} ml={4} color="#1e2d52" wordBreak='break-all' fontWeight='normal'>
+                            {proofData?.signal}
+                        </Heading>
+                    </Box>
+                    <Divider />
+                    <Divider />
+                    <Box display="flex" flexDir="column" alignItems="start" justifyContent="end" mt={4}>
+                        <Heading size="sm" color="#1e2d52">
+                            Proof:{" "}
+                        </Heading>
+                        <Heading size="sm" p={2} ml={4} color="#1e2d52" wordBreak='break-all' fontWeight='normal'>
+                            {proofData?.proof}
+                        </Heading>
+                    </Box>
+                    <Divider />
+                    <Box display="flex" flexDir="column" alignItems="start" justifyContent="end" mt={4}>
+                        <Heading size="sm" color="#1e2d52">
+                            CreatedAt:{" "}
+                        </Heading>
+                        <Heading size="sm" p={2} ml={4} color="#1e2d52" wordBreak='break-all' fontWeight='normal'>
+                            {proofData?.createdAt}
+                        </Heading>
+                    </Box>
+                    <Divider />
+                    <Box display="flex" flexDir="column" alignItems="start" justifyContent="end" mt={4}>
+                        <Heading size="sm" color="#1e2d52">
+                            Tx Hash:{" "}
+                        </Heading>
+                        <Heading size="sm" p={2} ml={4} color="#1e2d52" wordBreak='break-all' fontWeight='normal' _hover={{ textDecoration: 'underline' }}>
+                            {proofData ? <a target='_blank' href={`https://mumbai.polygonscan.com/tx/${proofData.txHash}`}>{`https://mumbai.polygonscan.com/tx/${proofData.txHash}`}</a> : "loading..."}
+                        </Heading>
+                    </Box>
+                    <Divider />
+                    <Box display='flex' alignItems='center' mt={4} flexDir='column'>
+                        <Heading size='sm' mb={4}>
+                            Share your proof on Twitter and get a free genesis NFT!
+                        </Heading>
+                        <a
+                            href="https://twitter.com/share?ref_src=twsrc%5Etfw"
+                            className="twitter-share-button"
+                            data-size="large"
+                            data-text="I created a zero knowledge proof with ZK3 Protocol. Check it out on the proof explorer! Generate a proof and mint a free genesis NFT for a limited time only!"
+                            data-url={`https://zk3-app-zk3.vercel.app/proof/${params.id}`}
+                            data-via="zk3org"
+                            data-show-count="false"
+                        >
+
+                        </a>
+                        <script async src="https://platform.twitter.com/widgets.js"></script>
+                        <Heading size='sm' mt={4}>
+                            {hasTweeted ? "Thanks for sharing!" : "Please share your proof on Twitter to be eligible for the mint!"}
+                        </Heading>
+                        <Button isDisabled={!hasTweeted} mt={4} variant='solid' bgColor='#002add' color='#fff' colorScheme='blue'>
+                            MINT
+                        </Button>
+                    </Box>
+                </>
+            }
         </>
     )
 }

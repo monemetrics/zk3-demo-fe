@@ -7,7 +7,7 @@ export default function ProofPage({ params }: any) {
     const [proofData, setProofData] = useState<any>(null)
     const [hasTweeted, setHasTweeted] = useState<boolean>(false)
     const [proof404, setProof404] = useState<boolean>(false)
-    const fetchQGLProofData = async () => {
+    const fetchGQLProofData = async () => {
         const graphqlQuery = {
             operationName: "Query",
             query: `query Query($proofId: ID!) {
@@ -46,7 +46,7 @@ export default function ProofPage({ params }: any) {
     // const dummyCircleName = "Circle Name"
     // const dummyContentURI = "ipfs://asdf.com"
     useEffect(() => {
-        fetchQGLProofData()
+        fetchGQLProofData()
     }, [])
     // fetchQGLProofData()
 

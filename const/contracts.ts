@@ -7,6 +7,9 @@ export const LENS_SANDBOX_CONTRACT_ADDRESS = "0x7582177F9E536aB0b6c721e11f383C32
 export const SEMAPHORE_ZK3_CONTRACT_ADDRESS = "0xba4cf9D716Ec42E2996Fc2e6b8B97854CD344Ce3"
 export const ZK3_REFERENCE_MODULE_CONTRACT_ADDRESS = "0x60a867ACF71d5c7cDf357d70CdC4FBAF7CcBdBb0"
 export const ZK3_GRAPHQL_ENDPOINT = "https://dev.zk3.io/graphql"
+export const MAINNET_API_URL = "https://api.lens.dev/"
+export const MUMBAI_API_URL = "https://api-mumbai.lens.dev/"
+export const SANDBOX_API_URL = "https://api-sandbox-mumbai.lens.dev/"
 // export const ZK3_GRAPHQL_ENDPOINT = "http://localhost:4000/graphql"
 
 // 2. export the contract abi

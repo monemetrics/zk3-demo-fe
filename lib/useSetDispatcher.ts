@@ -59,7 +59,7 @@ const useSetDispatcher = () => {
             variables: {
                 request: {
                     profileId: profileQuery.data?.defaultProfile?.id,
-                    dispatcher: "set our custom dispatcher address here"
+                    dispatcher: "0xD9bcb5871c4c859583e4B8c8526Cf097a1e322F3"
                 }
             }
         }

@@ -147,9 +147,8 @@ export default function CreatePost() {
                                 description,
                                 content,
                                 selectedProof,
-                                profileIdPointed: BigNumber.from(pointedToPostId?.split("-")[0]),
-                                pubIdPointed: BigNumber.from(pointedToPostId?.split("-")[1])
-                            });
+                                pubIdPointed: pointedToPostId.toString()
+                            })
                     }}
                 >
                     Create Post

@@ -35,8 +35,7 @@ type CreateCommentArgs = {
     description: string
     content: string
     selectedProof: circle | undefined
-    profileIdPointed: BigNumber
-    pubIdPointed: BigNumber
+    pubIdPointed: string
 }
 
 const PINATA_JWT = process.env.PINATA_JWT
@@ -76,7 +75,6 @@ export function useCreateCommentWithDispatcher() {
         description,
         content,
         selectedProof,
-        profileIdPointed,
         pubIdPointed
     }: CreateCommentArgs) {
         console.log("createPost", image, title, description, content, selectedProof)
@@ -175,7 +173,7 @@ export function useCreateCommentWithDispatcher() {
             SEMAPHORE_ZK3_CONTRACT_ADDRESS,
             SEMAPHORE_ZK3_CONTRACT_ABI
         )
-        
+
         const rootOnChain = await semaphoreZk3Contract.call("getMerkleTreeRoot", BigNumber.from(selectedProof.id))
         console.log("rootOnChain", rootOnChain.toString())
         // check if roots match
@@ -227,10 +225,10 @@ export function useCreateCommentWithDispatcher() {
                     pointedPost: pubIdPointed,
                     refInitData: referenceModuleInitData,
                     refData: referenceModuleData,
-                    contentUri: postMetadataIpfsUrl,
+                    contentUri: postMetadataIpfsUrl
                 }
             }
-    
+
             const response = await fetch(ZK3_GRAPHQL_ENDPOINT, {
                 method: "POST",
                 headers: {
@@ -244,12 +242,12 @@ export function useCreateCommentWithDispatcher() {
             return data.data
         }
 
-        const result = await broadcastComment()        
+        const result = await broadcastComment()
 
         console.log("result", result)
         toast({
             title: `Lens Post Created!`,
-            description: `https://mumbai.polygonscan.com/tx/${result.receipt.transactionHash}`,
+            description: `https://mumbai.polygonscan.com/tx/${result?.broadcastComment}`,
             status: "success",
             duration: 300000,
             isClosable: true

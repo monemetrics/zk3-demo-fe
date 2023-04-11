@@ -232,7 +232,7 @@ export function useCreatePostWithDispatcher() {
         console.log("result", result)
         toast({
             title: `Lens Post Created!`,
-            description: `https://mumbai.polygonscan.com/tx/${result.receipt.transactionHash}`,
+            description: `https://mumbai.polygonscan.com/tx/${result?.broadcastPost}`,
             status: "success",
             duration: 300000,
             isClosable: true

@@ -16,7 +16,7 @@ export const fetcher = <TData, TVariables>(
   async function getAccessToken() {
       // 1. Check the local storage for the access token
       const token = readAccessToken()
-      console.log("token", token)
+      //console.log("token", token)
       // 2. If there isn't a token, then return null (not signed in)
       if (!token) return null
 
@@ -36,7 +36,7 @@ export const fetcher = <TData, TVariables>(
 
   return async () => {
       const token = typeof window !== "undefined" ? await getAccessToken() : null
-      console.log("token::", token, url_in_use)
+      //console.log("token::", token, url_in_use)
       const res = await fetch(url_in_use, {
           method: "POST",
           headers: {

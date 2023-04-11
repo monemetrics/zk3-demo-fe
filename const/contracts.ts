@@ -10,6 +10,9 @@ export const ZK3_GRAPHQL_ENDPOINT = "https://dev.zk3.io/graphql"
 export const MAINNET_API_URL = "https://api.lens.dev/"
 export const MUMBAI_API_URL = "https://api-mumbai.lens.dev/"
 export const SANDBOX_API_URL = "https://api-sandbox-mumbai.lens.dev/"
+
+export const ZK3_DISPATCHER_ADDRESS = "0xD9bcb5871c4c859583e4B8c8526Cf097a1e322F3"
+
 // export const ZK3_GRAPHQL_ENDPOINT = "http://localhost:4000/graphql"
 
 // 2. export the contract abi

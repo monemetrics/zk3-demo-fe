@@ -9,6 +9,7 @@ import LensActionList from "./LensActionList"
 import LogsContext from "../../context/LogsContext"
 import ZK3Context from "../../context/ZK3Context"
 import { InfoIcon, SettingsIcon } from "@chakra-ui/icons";
+import useSetDispatcher from "../../lib/useSetDispatcher";
 
 function LensGroupPage() {
     const { setLogs } = useContext(LogsContext)
@@ -16,6 +17,7 @@ function LensGroupPage() {
     const address = useAddress();
     const toast = useToast()
     const { isOpen, onOpen, onClose } = useDisclosure()
+    const { setDispatcher } = useSetDispatcher()
 
     const handleDisconnectIdentity = () => {
         localStorage.removeItem("identity")
@@ -51,6 +53,7 @@ function LensGroupPage() {
                         <Link href="/">
                             <MenuItem onClick={handleDisconnectIdentity}>Disconnect Identity</MenuItem>
                         </Link>
+                        <MenuItem onClick={setDispatcher}>Set ZK3 Dispatcher</MenuItem>
                     </MenuList>
                 </Menu>
             </Flex>

@@ -2,7 +2,7 @@ import { useState, useContext } from "react"
 import ZK3Context from "../context/ZK3Context"
 import { useAddress, useSDK } from "@thirdweb-dev/react"
 import { SetDispatcherRequest, useDefaultProfileQuery } from "../graphql/generated"
-import { LENS_MUMBAI_CONTRACT_ABI, LENS_SANDBOX_CONTRACT_ADDRESS, SANDBOX_API_URL } from "../const/contracts"
+import { LENS_MUMBAI_CONTRACT_ABI, LENS_SANDBOX_CONTRACT_ADDRESS, SANDBOX_API_URL, ZK3_DISPATCHER_ADDRESS } from "../const/contracts"
 import { signTypedDataWithOmmittedTypename, splitSignature } from "./helpers"
 
 const useSetDispatcher = () => {
@@ -24,13 +24,13 @@ const useSetDispatcher = () => {
             enabled: !!address
         }
     )
-    console.log(profileQuery.data?.defaultProfile?.id)
+    //console.log(profileQuery.data?.defaultProfile?.id)
 
     const requestSetDispatcherTypedData = async () => {
         const requestSetDispatcherTypedDataMutation = {
-            operationName: "Mutation",
-            mutation: `
-            mutation CreateSetDispatcherTypedData ($request: SetDispatcherRequest!)) {
+            operationName: "CreateSetDispatcherTypedData",
+            query: `
+            mutation CreateSetDispatcherTypedData ($request: SetDispatcherRequest!) {
                 createSetDispatcherTypedData(request: $request) {
                   id
                   expiresAt
@@ -59,7 +59,8 @@ const useSetDispatcher = () => {
             variables: {
                 request: {
                     profileId: profileQuery.data?.defaultProfile?.id,
-                    dispatcher: "0xD9bcb5871c4c859583e4B8c8526Cf097a1e322F3"
+                    //enable: false,
+                    dispatcher: ZK3_DISPATCHER_ADDRESS
                 }
             }
         }
@@ -67,8 +68,9 @@ const useSetDispatcher = () => {
         const response = await fetch(SANDBOX_API_URL, {
             method: "POST",
             headers: {
-                "x-access-token": `Bearer ${_lensAuthToken}`,
-                "Content-Type": "application/json"
+                "x-access-token": `${_lensAuthToken}`,
+                "Content-Type": "application/json",
+                "Access-Control-Allow-Origin": "*"
             },
             body: JSON.stringify(requestSetDispatcherTypedDataMutation)
         })
@@ -80,6 +82,7 @@ const useSetDispatcher = () => {
     const setDispatcher = async () => {
         setLoading(true)
         try {
+            console.log('entering setDispatcher()...')
             const result = await requestSetDispatcherTypedData()
             const typedData = result.typedData
             console.log("set dispatcher: typedData", typedData)
@@ -111,7 +114,7 @@ const useSetDispatcher = () => {
                     deadline: typedData.value.deadline
                 }
             })
-            console.log("set dispatcher: tx hash", tx.hash)
+            console.log("set dispatcher: tx hash", tx)
         } catch (e) {
             setError(e)
         } finally {

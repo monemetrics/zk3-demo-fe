@@ -47,6 +47,7 @@ const useZK3Proof = () => {
     }
 
     function generateGroupFromCircle(_circle: circle) {
+        console.log("generateGroupFromCircle: ", _circle)
         const _group = new Group(_circle.id)
         console.log("roop pre adding members: ", _group.root)
         console.log("circle Members: ", _circle.members)

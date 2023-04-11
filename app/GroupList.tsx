@@ -18,16 +18,16 @@ function GroupList() {
     `;
 
     const [groupData, setGroupData] = useState<string[]>([])
-    const { getActiveGroups, _lensAuthToken } = useContext(ZK3Context)
+    const { getActiveGroups, _githubAuthToken } = useContext(ZK3Context)
 
     //const { loading, error, data } = useQuery(GET_CIRCLES);
 
     useEffect(() => {
         //console.log(getActiveGroups())
         setGroupData(getActiveGroups().concat(['Ethereum']))
-        if (_lensAuthToken && !getActiveGroups().includes('Lens'))
-            setGroupData(getActiveGroups().concat(['Lens']).concat(['Ethereum']))
-    }, [_lensAuthToken])
+        if (_githubAuthToken && !getActiveGroups().includes('Github'))
+            setGroupData(getActiveGroups().concat(['Github']).concat(['Ethereum']))
+    }, [_githubAuthToken])
 
     return (
         <>
@@ -35,7 +35,7 @@ function GroupList() {
                 {groupData.map((entry: string) => {
                     return (
                         <Link key={entry} href={'/' + entry.toLowerCase()}>
-                            <PrimaryCard name={entry} logo={entry} text='View Group' />
+                            <PrimaryCard name={entry === 'Ethereum' ? 'OnChain' : entry} logo={entry} text='View Group' />
                         </Link>)
 
                 })}

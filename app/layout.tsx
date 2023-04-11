@@ -4,7 +4,7 @@ import { Identity } from '@semaphore-protocol/identity'
 import { useState, useEffect } from 'react'
 import { ChakraProvider, Container, Stack, HStack, Text, Spinner, useToast } from '@chakra-ui/react'
 import { WagmiConfig, createClient, useAccount, useConnect, useDisconnect, useEnsName } from 'wagmi'
-import { ApolloClient, InMemoryCache, ApolloProvider, HttpLink, ApolloLink } from '@apollo/client';
+import { ApolloClient, InMemoryCache, ApolloProvider, HttpLink, ApolloLink, gql } from '@apollo/client';
 import { getDefaultProvider } from 'ethers'
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ThirdwebProvider, ChainId } from "@thirdweb-dev/react";
@@ -86,6 +86,21 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       }`,
             variables: { service: "github" }
         }
+
+        const getCirclesQuery = {
+            operationName: "GetCircles",
+            query: `
+            query GetCircles {
+                circles {
+                    name
+                    id
+                    description
+                    members
+                    contentURI
+                }
+            }
+        `};
+
         const fetchHasGithubGroup = async () => {
             const response = await fetch(ZK3_GRAPHQL_ENDPOINT, {
                 method: "POST",
@@ -128,6 +143,35 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 duration: 5000,
                 isClosable: true
             })
+
+            const fetchCircles = async () => {
+                const response = await fetch(ZK3_GRAPHQL_ENDPOINT, {
+                    method: "POST",
+                    headers: {
+                        "x-access-token": `Bearer ${JSON.parse(lensAuthToken!).accessToken}`,
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(getCirclesQuery)
+                })
+                const data: { data: { circles: circle[] } } = await response.json()
+                console.log("circles: ", data)
+                if (data.data.circles) {
+                    const identity = new Identity(identityString) /////////////////////////////////////////
+                    const commitment = identity.getCommitment()
+                    var circleList = data.data.circles
+                    var myCircleList: circle[] = []
+                    circleList.forEach((element: any) => {
+                        if (element.members.includes(commitment.toString())) {
+                            myCircleList.push(element)
+                        }
+                    });
+                    setMyCircleList(myCircleList)
+                    localStorage.setItem("myCircleList", JSON.stringify(myCircleList))
+                }
+            }
+
+            fetchCircles()
+
         } else {
             toast({
                 title: "Identity Not Found!",
@@ -141,7 +185,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
     const getActiveGroups = () => {
         var groups: string[] = []
-        if (_lensAuthToken) groups.push("Lens")
+        //if (_lensAuthToken) groups.push("Lens")
         if (_githubAuthToken) groups.push("Github")
         if (_eventbriteAuthToken) groups.push("Eventbrite")
         return groups

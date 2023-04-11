@@ -37,12 +37,7 @@ function LensGroupPage() {
 
     return (
         <>
-            <Flex justifyContent='space-between' alignItems='center'>
-                <Link href='/'>
-                    <Button size={{ 'base': 'sm', 'sm': 'md' }} variant='solid' colorScheme='blue' color='#fff' bgColor='#002add'>
-                        Back
-                    </Button>
-                </Link>
+            <Flex justifyContent='end' alignItems='center'>
                 <Menu>
                     <MenuButton
                         variant='ghost'
@@ -60,7 +55,7 @@ function LensGroupPage() {
 
             <Flex justifyContent='center'>
                 <Text align='center' as="b" fontSize="5xl">
-                    Lens Group
+                    Lens Playground
                 </Text>
                 <IconButton onClick={onOpen} variant='ghost' aria-label="info" icon={<InfoIcon color='#002add' />}></IconButton>
             </Flex>
@@ -68,7 +63,7 @@ function LensGroupPage() {
             <IdBar />
 
             <Text align='center' pt="2" fontSize="md">
-                Please select an action to perform in the Lens Group
+                Please select an action to perform in the Lens Playground
             </Text>
             <Spacer />
             {_identity && <Text align='center' pt="2" fontSize="lg" fontWeight='bold'> Available Actions:</Text>}
@@ -85,11 +80,11 @@ function LensGroupPage() {
             <Modal isOpen={isOpen} onClose={onClose} isCentered>
                 <ModalOverlay />
                 <ModalContent>
-                    <ModalHeader>Information about the Lens Group</ModalHeader>
+                    <ModalHeader>Information about the Lens Playground</ModalHeader>
                     <ModalCloseButton />
                     <ModalBody>
                         <Text>
-                            The Lens Group allows you to publish Lens Posts or Comments with an attached ZK3 Proof. Your Lens Publication will be attributed to the profile displayed in the top right corner of the dApp. (Can be a Lens Profile held by a different wallet than the one you used to generate your Indentity)
+                            The Lens Playground allows you to publish Lens Posts or Comments with an attached ZK3 Proof. Your Lens Publication will be attributed to the profile displayed in the top right corner of the dApp. (Can be a Lens Profile held by a different wallet than the one you used to generate your Indentity)
                         </Text>
                     </ModalBody>
                 </ModalContent>

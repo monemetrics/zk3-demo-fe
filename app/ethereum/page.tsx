@@ -26,23 +26,6 @@ function EthereumGroupPage() {
     const { isOpen, onOpen, onClose } = useDisclosure()
     const toast = useToast()
 
-    //console.log(address, _identity)
-    const GET_CIRCLES = gql`
-        query GetCircles {
-            circles {
-                name
-                id
-                description
-                members
-                contentURI
-            }
-        }
-    `;
-
-    const { loading, error, data: _circleData } = useQuery(GET_CIRCLES)
-
-    const commitment = new Identity(_identity?.toString()).getCommitment()
-
     const handleDisconnectIdentity = () => {
         localStorage.removeItem("identity")
         localStorage.removeItem("myCircleList")
@@ -108,8 +91,8 @@ function EthereumGroupPage() {
             <Flex flexDirection='column' p="6" alignItems='center' borderColor='#1e2d52' borderWidth='1px' borderRadius='12px'>
                 <Spacer />
 
-                {_circleData ? (
-                    <MyProofList data={_circleData} />
+                {_myCircleList ? (
+                    <MyProofList />
                 ) : (
                     <Text>Loading...</Text>
                 )}

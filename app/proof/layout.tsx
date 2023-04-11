@@ -12,6 +12,7 @@ export default function ProofLayout({ children }: { children: React.ReactNode })
     }
     return (
         <Box>
+            <Heading textAlign='center' mb={4}>Proof Explorer</Heading>
             <form onSubmit={(e) => {
                 e.preventDefault()
                 handleSearchProof()

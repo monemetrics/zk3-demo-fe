@@ -109,7 +109,7 @@ function GithubGroupPage() {
                 <Spacer />
 
                 {_circleData ? (
-                    <MyProofList data={_circleData} />
+                    <MyProofList />
                 ) : (
                     <Text>Loading...</Text>
                 )}

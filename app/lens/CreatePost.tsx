@@ -5,6 +5,8 @@ import React, { useEffect, useState } from "react";
 import { LENS_MUMBAI_CONTRACT_ABI, LENS_MUMBAI_CONTRACT_ADDRESS, LENS_SANDBOX_CONTRACT_ADDRESS } from "../../const/contracts";
 import { useCreatePost } from "../../lib/useCreatePost";
 import { useCreateComment } from "../../lib/useCreateComment";
+import { useCreatePostWithDispatcher } from "../../lib/useCreatePostWithDispatcher";
+import { useCreateCommentWithDispatcher } from "../../lib/useCreateCommentWithDispatcher";
 import { Input, Textarea, Select, Radio, RadioGroup, HStack, FormLabel, Box } from "@chakra-ui/react";
 import { BigNumber } from "ethers";
 
@@ -23,6 +25,8 @@ export default function CreatePost() {
     const [content, setContent] = useState<string>("");
     const { mutateAsync: createPost } = useCreatePost();
     const { mutateAsync: createComment } = useCreateComment();
+    const { mutateAsync: createPostWithDispatcher } = useCreatePostWithDispatcher();
+    const { mutateAsync: createCommentWithDispatcher } = useCreateCommentWithDispatcher();
     const [circles, setCircles] = useState<circle[]>([]);
     const [selectedProof, setSelectedProof] = useState<circle>();
     const [publicationType, setPublicationType] = useState('Post');
@@ -129,7 +133,7 @@ export default function CreatePost() {
                     action={async () => {
                         //if (!image) return;
                         if (publicationType === "Post")
-                            return await createPost({
+                            return await createPostWithDispatcher({
                                 image,
                                 title,
                                 description,
@@ -137,7 +141,7 @@ export default function CreatePost() {
                                 selectedProof,
                             });
                         else if (publicationType === "Comment")
-                            return await createComment({
+                            return await createCommentWithDispatcher({
                                 image,
                                 title,
                                 description,

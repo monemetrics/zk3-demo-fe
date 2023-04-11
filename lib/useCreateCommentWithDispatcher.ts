@@ -216,7 +216,7 @@ export function useCreateCommentWithDispatcher() {
         const broadcastComment = async () => {
             const broadcastCommentMutation = {
                 operationName: "Mutation",
-                mutation: `
+                query: `
                 mutation Mutation($circleId: ID!, $profileId: String!, $pointedPost: String!, $refInitData: String!, $refData: String!, $contentUri: String) {
                     broadcastComment(circleId: $circleId, profileId: $profileId, pointedPost: $pointedPost, refInitData: $refInitData, refData: $refData, contentURI: $contentUri)
                   }                  

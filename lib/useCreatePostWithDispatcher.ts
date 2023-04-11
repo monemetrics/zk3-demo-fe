@@ -39,7 +39,7 @@ type CreatePostArgs = {
 
 const PINATA_JWT = process.env.PINATA_JWT
 
-export function useCreatePost() {
+export function useCreatePostWithDispatcher() {
     const { mutateAsync: requestTypedData } = useCreatePostTypedDataMutation()
     const { mutateAsync: uploadToIpfs } = useStorageUpload()
     const { profileQuery } = useLensUser()
@@ -201,8 +201,8 @@ export function useCreatePost() {
         const broadcastPost = async () => {
             const broadcastPostMutation = {
                 operationName: "Mutation",
-                mutation: `
-                mutation Mutation($circleId: ID!, $profileId: String!, $contentUri: String!, $refInitData: String!, $signature: String!) {
+                query: `
+                mutation Mutation($circleId: ID!, $profileId: String!, $contentUri: String!, $refInitData: String!, $signature: String) {
                     broadcastPost(circleId: $circleId, profileId: $profileId, contentURI: $contentUri, refInitData: $refInitData, signature: $signature)
                   }
                   `,
@@ -211,7 +211,6 @@ export function useCreatePost() {
                     profileId: profileQuery.data?.defaultProfile?.id,
                     contentUri: postMetadataIpfsUrl,
                     refInitData: referenceModuleInitData,
-                    signature: proof.proof // todo: change after backend sig fix
                 }
             }
     

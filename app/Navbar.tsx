@@ -58,7 +58,7 @@ export default function Navbar() {
                 <Show breakpoint='(max-width: 800px)'>
                     <Flex minWidth='max-content' alignItems='center' gap='2' bgColor='#002add' p='1' justifyContent='center'>
                         <Box>
-                            <ButtonGroup size='md' isAttached variant='solid' bgColor='#fff' borderRadius={8} borderColor='#151c2b' borderWidth={2}>
+                            <ButtonGroup size={{ 'base': 'sm', 'sm': 'md' }} isAttached variant='solid' bgColor='#fff' borderRadius={8} borderColor='#151c2b' borderWidth={2}>
                                 <Link href='/proof/dashboard'>
                                     <Button onClick={() => setActivePage('Explorer')} _hover={activePage === 'Explorer' ? { bgColor: '#4299E1' } : { bgColor: '#e2e2e2' }} bgColor={activePage === 'Explorer' ? '#002add' : '#fff'} borderRightColor='#151c2b' borderRightWidth={2} borderRightRadius={0} color={activePage === 'Explorer' ? '#fff' : '#151c2b'}>Proof Explorer</Button>
                                 </Link>

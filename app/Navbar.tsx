@@ -25,7 +25,7 @@ export default function Navbar() {
     return (
         <>
             <Box>
-                <Flex minWidth='max-content' alignItems='center' gap='2' bgColor='#002add' p='1'>
+                <Flex minWidth='max-content' alignItems='center' gap='1' bgColor='#002add' p='1'>
                     <Box p='0' display='flex' alignItems='center'>
                         <HStack borderColor='#151c2b' borderWidth={2} my={1} mx={2} bgColor='#fff' borderRadius='8' p='1' width={140} onClick={() => window.open('/', '_self')} _hover={{ cursor: "pointer", }}>
                             <Image alt='zk3 Logo' src={zk3Logo} height={60} width={60} style={{ objectFit: 'contain', marginRight: '0px' }}></Image>
@@ -50,7 +50,7 @@ export default function Navbar() {
                         </Box>
                     </Hide>
                     <Spacer />
-                    <Box p='0'>
+                    <Box p='0' mr={1}>
                         <LensSignInButton></LensSignInButton>
                     </Box>
                 </Flex>

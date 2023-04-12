@@ -1,11 +1,12 @@
 'use client'
 
-import { Divider, Flex, Text, Spacer, Button, useToast, IconButton, Menu, MenuButton, MenuList, MenuItem, Modal, ModalBody, ModalCloseButton, ModalContent, ModalHeader, ModalOverlay, useDisclosure } from "@chakra-ui/react"
+import { Divider, Flex, Text, Spacer, Button, useToast, IconButton, Menu, MenuButton, MenuList, MenuItem, Modal, ModalBody, ModalCloseButton, ModalContent, ModalHeader, ModalOverlay, useDisclosure, Alert, AlertTitle, Box, Heading } from "@chakra-ui/react"
 import { SettingsIcon, InfoIcon } from "@chakra-ui/icons"
 import { Identity } from '@semaphore-protocol/identity'
 import { useState, useRef, useCallback, useEffect, useContext } from 'react'
 import { useAddress, useSDK } from "@thirdweb-dev/react";
 import { ConnectWallet } from "@thirdweb-dev/react";
+import useSignPendingProofs from "../lib/useSignPendingProofs"
 import IdBar from "./IdBar"
 import GroupList from "./GroupList"
 import LogsContext from "../context/LogsContext"
@@ -21,6 +22,26 @@ function IdentityPage() {
     const sdk = useSDK()
     const [_signature, setSignature] = useState('')
     const { isOpen, onOpen, onClose } = useDisclosure()
+
+    const { signPendingProofs } = useSignPendingProofs()
+    const [pendingProofs, setPendingProofs] = useState([])
+
+    useEffect(() => {
+        const handleStorage = () => {
+
+            const pendingProofsString = localStorage.getItem("pendingProofs")
+
+            if (pendingProofsString) {
+                var pendingProofs = JSON.parse(pendingProofsString)
+                console.log("pendingProofs: ", pendingProofs)
+                setPendingProofs(pendingProofs)
+            }
+
+        }
+        handleStorage()
+        window.addEventListener('storage', handleStorage)
+        return () => window.removeEventListener('storage', handleStorage)
+    }, [])
 
     const GET_CIRCLES = gql`
         query GetCircles {
@@ -129,6 +150,12 @@ function IdentityPage() {
                     <ConnectWallet />
                 )}
             </Flex>
+
+            {pendingProofs.length !== 0 &&
+                <Box borderColor='#1e2d52' borderWidth='1px' borderRadius='12px' mt={2} p={2} display='flex' alignItems='center' justifyContent='space-between'>
+                    <Heading size='md'>Pending Proofs!</Heading>
+                    <Button onClick={() => signPendingProofs(pendingProofs)} size={{ 'base': 'sm', 'sm': 'md' }} variant='solid' colorScheme='blue' color='#fff' bgColor='#002add'> Sign Pending Proofs </Button>
+                </Box>}
 
             <Modal isOpen={isOpen} onClose={onClose} isCentered>
                 <ModalOverlay />

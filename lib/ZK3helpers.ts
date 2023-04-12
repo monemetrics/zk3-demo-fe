@@ -1,6 +1,6 @@
 import { BigNumber } from "ethers"
 
-export async function createBalanceOfProofTypedData(
+export async function createBalanceOfProofTypedDataSecondarySig(
     identityCommitment: string,
     ethAddress: string,
     balance: BigNumber
@@ -31,6 +31,42 @@ export async function createBalanceOfProofTypedData(
         types,
         value
     }
+}
+
+export async function createBalanceOfProofDoubleSignedTypedData(
+  identityCommitment: string,
+  ethAddress: string,
+  balance: BigNumber,
+  signature: string // this is the signature by the secondary signer, not the primary signer
+) {
+  const domain = {
+    name: "Zk3 Verify",
+    version: "1",
+    chainId: 80001,
+    verifyingContract: "0xCcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC",
+  };
+
+  const types = {
+    BalanceOf: [
+      { name: "identityCommitment", type: "string" },
+      { name: "ethAddress", type: "address" },
+      { name: "balance", type: "uint256" },
+      { name: "signature", type: "string" },
+    ],
+  };
+
+  const value = {
+    identityCommitment,
+    ethAddress,
+    balance,
+    signature,
+  };
+
+  return {
+    types,
+    domain,
+    value,
+  };
 }
 
 export async function createGithubRepoOwnerProofTypedData(

@@ -26,7 +26,7 @@ import PrimaryCard from '../PrimaryCard';
 import { useDisclosure } from '@chakra-ui/react';
 import { useBalance, useSDK, useAddress } from "@thirdweb-dev/react";
 import { ChainId, NATIVE_TOKEN_ADDRESS } from "@thirdweb-dev/sdk";
-import { createBalanceOfProofTypedData } from '../../lib/ZK3helpers';
+import { createBalanceOfProofTypedDataSecondarySig } from '../../lib/ZK3helpers';
 import ZK3Context from "../../context/ZK3Context"
 import { BigNumber } from 'ethers';
 import { Identity } from '@semaphore-protocol/identity';
@@ -37,26 +37,29 @@ function EVMBalanceOfProof() {
     const { isOpen, onOpen, onClose } = useDisclosure()
     const [balanceOfValue, setBalanceOfValue] = useState<number>(1)
     const [selectedSymbol, setSelectedSymbol] = useState('MATIC')
-    const { _identity } = useContext(ZK3Context)
+    const { _identity, _identityLinkedEOA } = useContext(ZK3Context)
     const address = useAddress()
     const sdk = useSDK()
     const toast = useToast()
-    
-    var BALANCE_OF_PROOF = gql`mutation CreateBalanceOfProof(
+
+    var BALANCE_OF_PROOF = gql`mutation Mutation(
         $identityCommitment: String!, 
         $ethAddress: String!, 
         $balance: String!, 
-        $signature: String
-        ) {
+        $mainSig: String, 
+        $secondarySig: String, 
+        $doubleSigned: String) {
             createBalanceOfProof(
                 identityCommitment: $identityCommitment, 
                 ethAddress: $ethAddress, 
                 balance: $balance, 
-                signature: $signature)
+                mainSig: $mainSig, 
+                secondarySig: $secondarySig, 
+                doubleSigned: $doubleSigned)
       }`;
 
     const [mutateFunction, { data: authData }] = useMutation(BALANCE_OF_PROOF, {
-        
+
     });
 
     const handleGenerateProof = async (e: any) => {
@@ -68,22 +71,42 @@ function EVMBalanceOfProof() {
             return
         const commitment = new Identity(_identity.toString()).getCommitment()
         //console.log(commitment)
-        const typedData = await createBalanceOfProofTypedData(commitment.toString(), address, BigNumber.from(9))
+        const typedData = await createBalanceOfProofTypedDataSecondarySig(commitment.toString(), address, BigNumber.from(balanceOfValue))
 
         const signature = await sdk?.wallet.signTypedData(typedData.domain, typedData.types, typedData.value)
-        //console.log(signature)
+        console.log(signature?.signature)
+        if (signature) {
+            const pendingProofsString = localStorage.getItem('pendingProofs')
+            if (pendingProofsString) {
+                var pendingProofs = JSON.parse(pendingProofsString)
+                pendingProofs = [...pendingProofs, signature]
+                localStorage.setItem('pendingProofs', JSON.stringify(pendingProofs))
+                window.dispatchEvent(new Event('storage'))
+            }
+            else {
+                localStorage.setItem('pendingProofs', JSON.stringify([signature]))
+                window.dispatchEvent(new Event('storage'))
+            }
+            onClose()
+        }
+        if (address === _identityLinkedEOA) {
+            //todo: add simple flow for single signer
+
+        }
+        return
+        //split here
 
         mutateFunction({ variables: { identityCommitment: commitment.toString(), ethAddress: address, balance: balanceOfValue.toString(), signature: signature?.signature } })
-                    .then((response) => {
-                        console.log("response: ", response)
-                        toast({
-                            title: `BalanceOfProof ${balanceOfValue} successfully created!`,
-                            description: `https://mumbai.polygonscan.com/tx/${response.data.createBalanceOfProof}`,
-                            status: 'success',
-                            duration: 100000,
-                            isClosable: true,
-                          })
-                    })
+            .then((response) => {
+                console.log("response: ", response)
+                toast({
+                    title: `BalanceOfProof ${balanceOfValue} successfully created!`,
+                    description: `https://mumbai.polygonscan.com/tx/${response.data.createBalanceOfProof}`,
+                    status: 'success',
+                    duration: 100000,
+                    isClosable: true,
+                })
+            })
 
     }
 
@@ -134,5 +157,6 @@ function EVMBalanceOfProof() {
         </>
     )
 }
+
 
 export default EVMBalanceOfProof

@@ -60,10 +60,10 @@ const useSignPendingProofs = () => {
                 const { identityCommitment, ethAddress, balance } = message // ethAddress = secondary signer (addy with funds)
                 const doubleSignedTypedData = await createBalanceOfProofDoubleSignedTypedData(
                     identityCommitment,
-                    address,
+                    ethAddress,
                     balance,
                     signature
-                ) // address = identityLinkedEOA
+                ) // address = the one the holds the funds (secondary signer) , not the one that linked the identity (primary signer)
 
                 const doubleSignature = await sdk?.wallet.signTypedData(
                     doubleSignedTypedData.domain,

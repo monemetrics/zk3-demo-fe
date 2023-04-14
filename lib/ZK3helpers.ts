@@ -1,6 +1,6 @@
 import { BigNumber } from "ethers"
 
-export async function createBalanceOfProofTypedDataSecondarySig(
+export async function createBalanceOfProofTypedDataAssetHolderSig(
     identityCommitment: string,
     ethAddress: string,
     balance: BigNumber

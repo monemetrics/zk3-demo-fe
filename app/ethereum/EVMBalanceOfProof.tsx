@@ -1,6 +1,6 @@
 import React from 'react'
 import { useContext, useEffect, useState } from 'react';
-import { Flex, Card, CardHeader, CardBody, Text, Radio, RadioGroup, HStack, Divider, Select, Button, useToast } from "@chakra-ui/react"
+import { Flex, Card, CardHeader, CardBody, Text, Radio, RadioGroup, HStack, Divider, Select, Button, useToast, Heading, Box } from "@chakra-ui/react"
 import {
     Modal,
     ModalOverlay,
@@ -26,7 +26,7 @@ import PrimaryCard from '../PrimaryCard';
 import { useDisclosure } from '@chakra-ui/react';
 import { useBalance, useSDK, useAddress } from "@thirdweb-dev/react";
 import { ChainId, NATIVE_TOKEN_ADDRESS } from "@thirdweb-dev/sdk";
-import { createBalanceOfProofTypedDataSecondarySig } from '../../lib/ZK3helpers';
+import { createBalanceOfProofTypedDataAssetHolderSig } from '../../lib/ZK3helpers';
 import ZK3Context from "../../context/ZK3Context"
 import { BigNumber, ethers } from "ethers"
 import { Identity } from "@semaphore-protocol/identity"
@@ -35,7 +35,7 @@ import { useQuery, useMutation, gql } from "@apollo/client"
 function EVMBalanceOfProof() {
     const { data: ethBalanceData, isLoading } = useBalance(NATIVE_TOKEN_ADDRESS)
     const { isOpen, onOpen, onClose } = useDisclosure()
-    const [balanceOfValue, setBalanceOfValue] = useState<number>(1)
+    const [balanceOfValue, setBalanceOfValue] = useState<number>(0)
     const [selectedSymbol, setSelectedSymbol] = useState("MATIC")
     const { _identity, _identityLinkedEOA } = useContext(ZK3Context)
     const address = useAddress()
@@ -71,7 +71,7 @@ function EVMBalanceOfProof() {
         if (!address) return
         const commitment = new Identity(_identity.toString()).getCommitment()
         //console.log(commitment)
-        const { domain, types, value } = await createBalanceOfProofTypedDataSecondarySig(
+        const { domain, types, value } = await createBalanceOfProofTypedDataAssetHolderSig(
             commitment.toString(),
             address,
             BigNumber.from(balanceOfValue)
@@ -89,42 +89,44 @@ function EVMBalanceOfProof() {
             throw new Error("Signature not valid")
         }
 
-        if (signature) {
-            const pendingProofsString = localStorage.getItem("pendingProofs")
-            if (pendingProofsString) {
-                var pendingProofs = JSON.parse(pendingProofsString)
-                pendingProofs = [...pendingProofs, signature]
-                localStorage.setItem("pendingProofs", JSON.stringify(pendingProofs))
-            } else {
-                localStorage.setItem("pendingProofs", JSON.stringify([signature]))
-            }
-            window.dispatchEvent(new Event("storage"))
-            onClose()
-        }
-
         if (address === _identityLinkedEOA) {
             //todo: add simple flow for single signer
+            mutateFunction({
+                variables: {
+                    identityCommitment: commitment.toString(),
+                    ethAddress: address,
+                    balance: balanceOfValue.toString(),
+                    linkedEoaSig: signature?.signature
+                }
+            }).then((response) => {
+                console.log("response: ", response)
+                toast({
+                    render: () => (
+                        <Box color="white" p={3} bg="green.500" borderRadius={8}>
+                            <Heading mb={2} size='md'>Create BalanceOfProof successful!</Heading>
+                            <a href={`https://mumbai.polygonscan.com/tx/${response.data.createBalanceOfProof}`} target='_blank'>{`https://mumbai.polygonscan.com/tx/${response.data.createBalanceOfProof}`}</a>
+                        </Box>
+                    ),
+                    duration: 10000
+                })
+            })
+        } else {
+            if (signature) {
+                const pendingProofsString = localStorage.getItem("pendingProofs")
+                if (pendingProofsString) {
+                    var pendingProofs = JSON.parse(pendingProofsString)
+                    pendingProofs = [...pendingProofs, signature]
+                    localStorage.setItem("pendingProofs", JSON.stringify(pendingProofs))
+                } else {
+                    localStorage.setItem("pendingProofs", JSON.stringify([signature]))
+                }
+                window.dispatchEvent(new Event("storage"))
+                onClose()
+            }
         }
         return
         //split here
 
-        mutateFunction({
-            variables: {
-                identityCommitment: commitment.toString(),
-                ethAddress: address,
-                balance: balanceOfValue.toString(),
-                signature: signature?.signature
-            }
-        }).then((response) => {
-            console.log("response: ", response)
-            toast({
-                title: `BalanceOfProof ${balanceOfValue} successfully created!`,
-                description: `https://mumbai.polygonscan.com/tx/${response.data.createBalanceOfProof}`,
-                status: "success",
-                duration: 100000,
-                isClosable: true
-            })
-        })
     }
 
     return (
@@ -153,7 +155,7 @@ function EVMBalanceOfProof() {
                                     ethBalanceData?.symbol}
                             </FormLabel>
                             <NumberInput
-                                defaultValue={1}
+                                defaultValue={0}
                                 value={balanceOfValue}
                                 onChange={(e) => {
                                     setBalanceOfValue(Number(e))
@@ -184,6 +186,7 @@ function EVMBalanceOfProof() {
                             bgColor="#002add"
                             color="#fff"
                             colorScheme="blue"
+                            isDisabled={balanceOfValue === 0}
                         >
                             Generate Proof
                         </Button>

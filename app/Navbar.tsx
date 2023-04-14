@@ -57,7 +57,7 @@ export default function Navbar() {
                         </Box>
                     </Hide>
                     <Spacer />
-                    <Box p='0' mr={1}>
+                    <Box p='0' mr={2}>
                         <LensSignInButton></LensSignInButton>
                     </Box>
                 </Flex>

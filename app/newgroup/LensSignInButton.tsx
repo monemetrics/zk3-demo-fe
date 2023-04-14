@@ -73,7 +73,7 @@ export default function LensSignInButton({ }: Props) {
   // If it's done loading and there's a default profile
   if (profileQuery.data?.defaultProfile) {
     return (
-      <HStack bgColor='#fff' p='1' borderRadius='8px' mr='2' borderColor='#151c2b' borderWidth={2}>
+      <HStack bgColor='#fff' p='1' borderRadius='8px' borderColor='#151c2b' borderWidth={2}>
         <Text color='#1e2d52'>{profileQuery.data?.defaultProfile.handle}</Text>
         <MediaRenderer
           // @ts-ignore

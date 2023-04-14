@@ -28,93 +28,114 @@ import { useBalance, useSDK, useAddress } from "@thirdweb-dev/react";
 import { ChainId, NATIVE_TOKEN_ADDRESS } from "@thirdweb-dev/sdk";
 import { createBalanceOfProofTypedDataSecondarySig } from '../../lib/ZK3helpers';
 import ZK3Context from "../../context/ZK3Context"
-import { BigNumber } from 'ethers';
-import { Identity } from '@semaphore-protocol/identity';
-import { useQuery, useMutation, gql } from '@apollo/client';
+import { BigNumber, ethers } from "ethers"
+import { Identity } from "@semaphore-protocol/identity"
+import { useQuery, useMutation, gql } from "@apollo/client"
 
 function EVMBalanceOfProof() {
-    const { data: ethBalanceData, isLoading } = useBalance(NATIVE_TOKEN_ADDRESS);
+    const { data: ethBalanceData, isLoading } = useBalance(NATIVE_TOKEN_ADDRESS)
     const { isOpen, onOpen, onClose } = useDisclosure()
     const [balanceOfValue, setBalanceOfValue] = useState<number>(1)
-    const [selectedSymbol, setSelectedSymbol] = useState('MATIC')
+    const [selectedSymbol, setSelectedSymbol] = useState("MATIC")
     const { _identity, _identityLinkedEOA } = useContext(ZK3Context)
     const address = useAddress()
     const sdk = useSDK()
     const toast = useToast()
 
-    var BALANCE_OF_PROOF = gql`mutation Mutation(
-        $identityCommitment: String!, 
-        $ethAddress: String!, 
-        $balance: String!, 
-        $mainSig: String, 
-        $secondarySig: String, 
-        $doubleSigned: String) {
+    var BALANCE_OF_PROOF = gql`
+        mutation CreateBalanceOfProof(
+            $identityCommitment: String!
+            $ethAddress: String!
+            $balance: String!
+            $linkedEoaSig: String
+            $secondaryEoaSig: String
+            $secondaryEoaAddress: String
+        ) {
             createBalanceOfProof(
-                identityCommitment: $identityCommitment, 
-                ethAddress: $ethAddress, 
-                balance: $balance, 
-                mainSig: $mainSig, 
-                secondarySig: $secondarySig, 
-                doubleSigned: $doubleSigned)
-      }`;
+                identityCommitment: $identityCommitment
+                ethAddress: $ethAddress
+                balance: $balance
+                linkedEOASig: $linkedEoaSig
+                secondaryEOASig: $secondaryEoaSig
+                secondaryEOAAddress: $secondaryEoaAddress
+            )
+        }
+    `
 
-    const [mutateFunction, { data: authData }] = useMutation(BALANCE_OF_PROOF, {
-
-    });
+    const [mutateFunction, { data: authData }] = useMutation(BALANCE_OF_PROOF, {})
 
     const handleGenerateProof = async (e: any) => {
         // toDo: add erc20 support (currently only native tokens)
         //console.log(_identity)
-        if (!_identity)
-            return
-        if (!address)
-            return
+        if (!_identity) return
+        if (!address) return
         const commitment = new Identity(_identity.toString()).getCommitment()
         //console.log(commitment)
-        const typedData = await createBalanceOfProofTypedDataSecondarySig(commitment.toString(), address, BigNumber.from(balanceOfValue))
+        const { domain, types, value } = await createBalanceOfProofTypedDataSecondarySig(
+            commitment.toString(),
+            address,
+            BigNumber.from(balanceOfValue)
+        )
 
-        const signature = await sdk?.wallet.signTypedData(typedData.domain, typedData.types, typedData.value)
+        const signature = await sdk?.wallet.signTypedData(domain, types, value)
         console.log(signature?.signature)
+        if (!signature) throw new Error("Signature not found")
+
+        const recoveredAddress = await ethers.utils.verifyTypedData(domain, types, value, signature.signature)
+        console.log("recovered address: ", recoveredAddress)
+        if (recoveredAddress !== address) {
+            console.log("recoveredAddress", recoveredAddress)
+            console.log("address", address)
+            throw new Error("Signature not valid")
+        }
+
         if (signature) {
-            const pendingProofsString = localStorage.getItem('pendingProofs')
+            const pendingProofsString = localStorage.getItem("pendingProofs")
             if (pendingProofsString) {
                 var pendingProofs = JSON.parse(pendingProofsString)
                 pendingProofs = [...pendingProofs, signature]
-                localStorage.setItem('pendingProofs', JSON.stringify(pendingProofs))
-                window.dispatchEvent(new Event('storage'))
-            }
-            else {
-                localStorage.setItem('pendingProofs', JSON.stringify([signature]))
-                window.dispatchEvent(new Event('storage'))
+                localStorage.setItem("pendingProofs", JSON.stringify(pendingProofs))
+                window.dispatchEvent(new Event("storage"))
+            } else {
+                localStorage.setItem("pendingProofs", JSON.stringify([signature]))
+                window.dispatchEvent(new Event("storage"))
             }
             onClose()
         }
+
         if (address === _identityLinkedEOA) {
             //todo: add simple flow for single signer
-
         }
         return
         //split here
 
-        mutateFunction({ variables: { identityCommitment: commitment.toString(), ethAddress: address, balance: balanceOfValue.toString(), signature: signature?.signature } })
-            .then((response) => {
-                console.log("response: ", response)
-                toast({
-                    title: `BalanceOfProof ${balanceOfValue} successfully created!`,
-                    description: `https://mumbai.polygonscan.com/tx/${response.data.createBalanceOfProof}`,
-                    status: 'success',
-                    duration: 100000,
-                    isClosable: true,
-                })
+        mutateFunction({
+            variables: {
+                identityCommitment: commitment.toString(),
+                ethAddress: address,
+                balance: balanceOfValue.toString(),
+                signature: signature?.signature
+            }
+        }).then((response) => {
+            console.log("response: ", response)
+            toast({
+                title: `BalanceOfProof ${balanceOfValue} successfully created!`,
+                description: `https://mumbai.polygonscan.com/tx/${response.data.createBalanceOfProof}`,
+                status: "success",
+                duration: 100000,
+                isClosable: true
             })
-
+        })
     }
 
     return (
         <>
-
             <div onClick={onOpen}>
-                <PrimaryCard name='BalanceOf proof' logo='Ethereum' text='Click to create a ZK3 proof of an ERC20 Balance' />
+                <PrimaryCard
+                    name="BalanceOf proof"
+                    logo="Ethereum"
+                    text="Click to create a ZK3 proof of an ERC20 Balance"
+                />
             </div>
 
             <Modal isOpen={isOpen} onClose={onClose} isCentered>
@@ -125,12 +146,19 @@ function EVMBalanceOfProof() {
                     <ModalBody>
                         <FormControl>
                             <FormLabel>
-                                {'Balance: ' + ethBalanceData?.displayValue.split('.')[0] + '.' + ethBalanceData?.displayValue.split('.')[1].substring(0, 5) + ' ' + ethBalanceData?.symbol}
+                                {"Balance: " +
+                                    ethBalanceData?.displayValue.split(".")[0] +
+                                    "." +
+                                    ethBalanceData?.displayValue.split(".")[1].substring(0, 5) +
+                                    " " +
+                                    ethBalanceData?.symbol}
                             </FormLabel>
                             <NumberInput
                                 defaultValue={1}
                                 value={balanceOfValue}
-                                onChange={(e) => { setBalanceOfValue(Number(e)) }}
+                                onChange={(e) => {
+                                    setBalanceOfValue(Number(e))
+                                }}
                                 min={0}
                                 max={Number(ethBalanceData?.displayValue)}
                                 keepWithinRange={true}
@@ -150,7 +178,16 @@ function EVMBalanceOfProof() {
                         </FormControl>
                     </ModalBody>
                     <ModalFooter>
-                        <Button onClick={handleGenerateProof} width='100%' variant='solid' bgColor='#002add' color='#fff' colorScheme='blue'>Generate Proof</Button>
+                        <Button
+                            onClick={handleGenerateProof}
+                            width="100%"
+                            variant="solid"
+                            bgColor="#002add"
+                            color="#fff"
+                            colorScheme="blue"
+                        >
+                            Generate Proof
+                        </Button>
                     </ModalFooter>
                 </ModalContent>
             </Modal>

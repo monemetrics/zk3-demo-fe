@@ -23,8 +23,24 @@ function IdentityPage() {
     const [_signature, setSignature] = useState('')
     const { isOpen, onOpen, onClose } = useDisclosure()
 
-    const { signPendingProofs } = useSignPendingProofs()
+    const { signPendingProofs, responseHash } = useSignPendingProofs()
     const [pendingProofs, setPendingProofs] = useState([])
+
+    useEffect(() => {
+        if (responseHash) {
+
+            toast({
+                render: () => (
+                    <Box color="white" p={3} bg="green.500" borderRadius={8}>
+                        <Heading mb={2} size='md'>Create BalanceOfProof successful!</Heading>
+                        <a href={responseHash} target='_blank'>{responseHash}</a>
+                    </Box>
+                ),
+                duration: 10000,
+                isClosable: true
+            })
+        }
+    }, [responseHash])
 
     useEffect(() => {
         const handleStorage = () => {
@@ -34,7 +50,10 @@ function IdentityPage() {
             if (pendingProofsString) {
                 var pendingProofs = JSON.parse(pendingProofsString)
                 console.log("pendingProofs: ", pendingProofs)
-                setPendingProofs(pendingProofs)
+                if (pendingProofs.length > 0)
+                    setPendingProofs(pendingProofs)
+                else
+                    setPendingProofs([])
             }
 
         }

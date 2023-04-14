@@ -95,11 +95,10 @@ function EVMBalanceOfProof() {
                 var pendingProofs = JSON.parse(pendingProofsString)
                 pendingProofs = [...pendingProofs, signature]
                 localStorage.setItem("pendingProofs", JSON.stringify(pendingProofs))
-                window.dispatchEvent(new Event("storage"))
             } else {
                 localStorage.setItem("pendingProofs", JSON.stringify([signature]))
-                window.dispatchEvent(new Event("storage"))
             }
+            window.dispatchEvent(new Event("storage"))
             onClose()
         }
 

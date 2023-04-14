@@ -2,10 +2,10 @@ import { createBalanceOfProofDoubleSignedTypedData } from "./ZK3helpers"
 import { useSDK, useAddress } from "@thirdweb-dev/react"
 import { useQuery, useMutation, gql } from "@apollo/client"
 import { Identity } from "@semaphore-protocol/identity"
-import { useContext } from "react"
+import { useContext, useState } from "react"
 import ZK3Context from "../context/ZK3Context"
 import { ethers } from "ethers"
-
+import { Box, useToast } from "@chakra-ui/react"
 interface SignedProofPayload {
     domain: any
     message: any
@@ -21,7 +21,10 @@ interface SignedProof {
 const useSignPendingProofs = () => {
     const address = useAddress()
     const sdk = useSDK()
-    const { _identity } = useContext(ZK3Context)
+    const { _identity, _identityLinkedEOA } = useContext(ZK3Context)
+    const [responseHash, setResponseHash] = useState<string | null>(null)
+
+    const toast = useToast()
 
     var BALANCE_OF_PROOF = gql`
         mutation CreateBalanceOfProof(
@@ -52,7 +55,13 @@ const useSignPendingProofs = () => {
 
         if (address !== localStorage.getItem("identityLinkedEOA")) {
             console.log(address, localStorage.getItem("identityLinkedEOA"))
-            alert("please swap your wallet to the one you linked to your identity")
+            toast({
+                title: `Wrong address connected`,
+                description: `Please swap your wallet in Metamask with the one you used to link your identity: ${_identityLinkedEOA}`,
+                status: "error",
+                duration: 50000,
+                isClosable: true
+            })
         } else {
             sigs.forEach(async (sig) => {
                 const { payload, signature } = sig
@@ -73,8 +82,13 @@ const useSignPendingProofs = () => {
                 console.log("doubleSig: ", doubleSignature)
 
                 if (doubleSignature) {
-                    const signer = ethers.utils.verifyTypedData(doubleSignedTypedData.domain, doubleSignedTypedData.types, doubleSignedTypedData.value, doubleSignature?.signature)
-                    console.log('signer: ', signer)
+                    const signer = ethers.utils.verifyTypedData(
+                        doubleSignedTypedData.domain,
+                        doubleSignedTypedData.types,
+                        doubleSignedTypedData.value,
+                        doubleSignature?.signature
+                    )
+                    console.log("signer: ", signer)
                     mutateFunction({
                         variables: {
                             identityCommitment: commitment.toString(),
@@ -86,6 +100,11 @@ const useSignPendingProofs = () => {
                         }
                     }).then((response) => {
                         console.log("response: ", response)
+                        if (response.data.createBalanceOfProof) {
+                            setResponseHash(`https://mumbai.polygonscan.com/tx/${response.data.createBalanceOfProof}`)
+                            localStorage.setItem("pendingProofs", JSON.stringify(sigs.filter((e) => e !== sig)))
+                            window.dispatchEvent(new Event("storage"))
+                        }
                     })
                 }
             })
@@ -93,7 +112,8 @@ const useSignPendingProofs = () => {
     }
 
     return {
-        signPendingProofs
+        signPendingProofs,
+        responseHash
     }
 }
 export default useSignPendingProofs

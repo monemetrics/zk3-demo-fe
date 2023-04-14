@@ -150,7 +150,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 const response = await fetch(ZK3_GRAPHQL_ENDPOINT, {
                     method: "POST",
                     headers: {
-                        "x-access-token": `Bearer ${JSON.parse(lensAuthToken!).accessToken}`,
                         "Content-Type": "application/json"
                     },
                     body: JSON.stringify(getCirclesQuery)

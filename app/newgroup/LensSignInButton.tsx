@@ -24,11 +24,13 @@ export default function LensSignInButton({ }: Props) {
   useEffect(() => {
     const handleStorage = () => {
       isSignedInQuery.refetch()
-      setLensAuthToken(JSON.parse(localStorage.getItem("LH_STORAGE_KEY")!).accessToken)
+      const temp = localStorage.getItem("LH_STORAGE_KEY")
+      if (temp)
+        setLensAuthToken(JSON.parse(temp).accessToken)
     }
 
-    window.addEventListener('storage', handleStorage)
-    return () => window.removeEventListener('storage', handleStorage)
+    window.addEventListener('lens storage', handleStorage)
+    return () => window.removeEventListener('lens storage', handleStorage)
   }, [])
 
   // 1. User needs to connect their wallet

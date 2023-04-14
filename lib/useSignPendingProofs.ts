@@ -4,6 +4,7 @@ import { useQuery, useMutation, gql } from "@apollo/client"
 import { Identity } from "@semaphore-protocol/identity"
 import { useContext } from "react"
 import ZK3Context from "../context/ZK3Context"
+import { ethers } from "ethers"
 
 interface SignedProofPayload {
     domain: any
@@ -72,6 +73,8 @@ const useSignPendingProofs = () => {
                 console.log("doubleSig: ", doubleSignature)
 
                 if (doubleSignature) {
+                    const signer = ethers.utils.verifyTypedData(doubleSignedTypedData.domain, doubleSignedTypedData.types, doubleSignedTypedData.value, doubleSignature?.signature)
+                    console.log('signer: ', signer)
                     mutateFunction({
                         variables: {
                             identityCommitment: commitment.toString(),

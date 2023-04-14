@@ -28,7 +28,7 @@ import { useBalance, useSDK, useAddress } from "@thirdweb-dev/react";
 import { ChainId, NATIVE_TOKEN_ADDRESS } from "@thirdweb-dev/sdk";
 import { createBalanceOfProofTypedDataSecondarySig } from '../../lib/ZK3helpers';
 import ZK3Context from "../../context/ZK3Context"
-import { BigNumber } from 'ethers';
+import { BigNumber, ethers } from 'ethers';
 import { Identity } from '@semaphore-protocol/identity';
 import { useQuery, useMutation, gql } from '@apollo/client';
 
@@ -75,7 +75,11 @@ function EVMBalanceOfProof() {
 
         const signature = await sdk?.wallet.signTypedData(typedData.domain, typedData.types, typedData.value)
         console.log(signature?.signature)
+
+        
         if (signature) {
+            const signer = ethers.utils.verifyTypedData(typedData.domain, typedData.types, typedData.value, signature?.signature)
+            console.log('signer: ', signer)
             const pendingProofsString = localStorage.getItem('pendingProofs')
             if (pendingProofsString) {
                 var pendingProofs = JSON.parse(pendingProofsString)

@@ -1,4 +1,4 @@
-import { Flex, Box, Spacer, Heading, Text, HStack, Hide, Input, InputGroup, InputLeftAddon, InputRightElement, Button, ButtonGroup, Show } from "@chakra-ui/react"
+import { Flex, Box, Spacer, Heading, Text, HStack, Hide, Input, InputGroup, InputLeftAddon, InputRightElement, Button, ButtonGroup, Show, VStack } from "@chakra-ui/react"
 import { useState, useEffect } from "react"
 import WalletButton from "./WalletButton"
 import Image from 'next/image'
@@ -9,7 +9,7 @@ import { SearchIcon } from "@chakra-ui/icons"
 import Link from "next/link"
 
 export default function Navbar() {
-    const [activePage, setActivePage] = useState<'Explorer' | 'Identity' | 'Lens'>('Identity')
+    const [activePage, setActivePage] = useState<'Explorer' | 'Identity' | 'Lens' | 'Genesis'>('Identity')
 
     useEffect(() => {
         //console.log('activePage:', window.location)
@@ -17,6 +17,8 @@ export default function Navbar() {
             setActivePage('Explorer')
         } else if (window.location.pathname.includes('/lens')) {
             setActivePage('Lens')
+        } else if (window.location.pathname.includes('/genesis')) {
+            setActivePage('Genesis')
         } else {
             setActivePage('Identity')
         }
@@ -35,18 +37,23 @@ export default function Navbar() {
                     <Spacer />
                     <Hide breakpoint='(max-width: 800px)'>
                         <Box>
-                            <ButtonGroup size='md' isAttached variant='solid' bgColor='#fff' borderRadius={8} borderColor='#151c2b' borderWidth={2}>
-                                <Link href='/proof/dashboard'>
-                                    <Button onClick={() => setActivePage('Explorer')} _hover={activePage === 'Explorer' ? { bgColor: '#4299E1' } : { bgColor: '#e2e2e2' }} bgColor={activePage === 'Explorer' ? '#002add' : '#fff'} borderRightColor='#151c2b' borderRightWidth={2} borderRightRadius={0} color={activePage === 'Explorer' ? '#fff' : '#151c2b'}>Proof Explorer</Button>
-                                </Link>
-                                <Link href='/'>
-                                    <Button onClick={() => setActivePage('Identity')} _hover={activePage === 'Identity' ? { bgColor: '#4299E1' } : { bgColor: '#e2e2e2' }} bgColor={activePage === 'Identity' ? '#002add' : '#fff'} borderRadius={0} color={activePage === 'Identity' ? '#fff' : '#151c2b'}>Identity</Button>
-                                </Link>
-                                <Link href='/lens'>
-                                    <Button onClick={() => setActivePage('Lens')} _hover={activePage === 'Lens' ? { bgColor: '#4299E1' } : { bgColor: '#e2e2e2' }} bgColor={activePage === 'Lens' ? '#002add' : '#fff'} borderLeftColor='#151c2b' borderLeftWidth={2} borderLeftRadius={0} color={activePage === 'Lens' ? '#fff' : '#151c2b'}>Lens Playground</Button>
-                                </Link>
+                            <VStack spacing='0'>
+                                <ButtonGroup size='md' isAttached variant='solid' bgColor='#fff' borderRadius={8} borderColor='#151c2b' borderWidth={2} mb={0}>
+                                    <Link href='/proof/dashboard'>
+                                        <Button width='165px' onClick={() => setActivePage('Explorer')} _hover={activePage === 'Explorer' ? { bgColor: '#4299E1' } : { bgColor: '#e2e2e2' }} bgColor={activePage === 'Explorer' ? '#002add' : '#fff'} borderRightColor='#151c2b' borderRightWidth={2} borderRightRadius={0} color={activePage === 'Explorer' ? '#fff' : '#151c2b'}>Proof Explorer</Button>
+                                    </Link>
+                                    <Link href='/'>
+                                        <Button onClick={() => setActivePage('Identity')} _hover={activePage === 'Identity' ? { bgColor: '#4299E1' } : { bgColor: '#e2e2e2' }} bgColor={activePage === 'Identity' ? '#002add' : '#fff'} borderRadius={0} color={activePage === 'Identity' ? '#fff' : '#151c2b'}>Identity</Button>
+                                    </Link>
+                                    <Link href='/lens'>
+                                        <Button width='165px' onClick={() => setActivePage('Lens')} _hover={activePage === 'Lens' ? { bgColor: '#4299E1' } : { bgColor: '#e2e2e2' }} bgColor={activePage === 'Lens' ? '#002add' : '#fff'} borderLeftColor='#151c2b' borderLeftWidth={2} borderLeftRadius={0} color={activePage === 'Lens' ? '#fff' : '#151c2b'}>Lens Playground</Button>
+                                    </Link>
 
-                            </ButtonGroup>
+                                </ButtonGroup>
+                                <Link href='/genesis'>
+                                    <Button size='sm' mt={0} onClick={() => setActivePage('Genesis')} _hover={activePage === 'Genesis' ? { bgColor: '#4299E1' } : { bgColor: '#e2e2e2' }} bgColor={activePage === 'Genesis' ? '#002add' : '#fff'} borderColor='#151c2b' borderWidth={2} borderTopWidth={0} borderTopRadius={0} color={activePage === 'Genesis' ? '#fff' : '#151c2b'}>Genesis Drop</Button>
+                                </Link>
+                            </VStack>
                         </Box>
                     </Hide>
                     <Spacer />

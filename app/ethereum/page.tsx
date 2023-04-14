@@ -22,7 +22,7 @@ interface circle {
 }
 
 function EthereumGroupPage() {
-    const { _identity, setMyCircleList, _myCircleList, setIdentity, setIdentityLinkedEOA } = useContext(ZK3Context)
+    const { _identity, setMyCircleList, _myCircleList, setIdentity, setIdentityLinkedEOA, setLensAuthToken } = useContext(ZK3Context)
     const address = useAddress();
     const { isOpen, onOpen, onClose } = useDisclosure()
     const toast = useToast()
@@ -51,9 +51,12 @@ function EthereumGroupPage() {
         localStorage.removeItem("identity")
         localStorage.removeItem("myCircleList")
         localStorage.removeItem("identityLinkedEOA")
+        localStorage.removeItem("pendingProofs")
+        localStorage.removeItem("LH_STORAGE_KEY")
         setIdentityLinkedEOA(null)
         setIdentity(null)
         setMyCircleList([])
+        setLensAuthToken(null)
         toast({
             title: 'Identity Disconnected!',
             description: 'Your Semaphore identity was just disconnected',

@@ -70,9 +70,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     const toast = useToast()
     const [_identity, setIdentity] = useState<Identity | null>(null)
     const [_identityLinkedEOA, setIdentityLinkedEOA] = useState<string | null>(null)
-    const [_lensAuthToken, setLensAuthToken] = useState<string>("")
-    const [_githubAuthToken, setGithubAuthToken] = useState<string>("")
-    const [_eventbriteAuthToken, setEventbriteAuthToken] = useState<string>("")
+    const [_lensAuthToken, setLensAuthToken] = useState<string | null>("")
+    const [_githubAuthToken, setGithubAuthToken] = useState<string | null>("")
+    const [_eventbriteAuthToken, setEventbriteAuthToken] = useState<string | null>("")
     const [_myCircleList, setMyCircleList] = useState<circle[]>([])
 
 

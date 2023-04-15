@@ -4,7 +4,7 @@ import { PublicationMainFocus, useCreatePostTypedDataMutation } from "../graphql
 import useLensUser from "./auth/useLensUser"
 import { signTypedDataWithOmmittedTypename, splitSignature } from "./helpers"
 import { v4 as uuidv4 } from "uuid"
-import { useToast } from "@chakra-ui/react"
+import { Box, Heading, useToast } from "@chakra-ui/react"
 import {
     LENS_MUMBAI_CONTRACT_ABI,
     LENS_MUMBAI_CONTRACT_ADDRESS,
@@ -29,18 +29,17 @@ interface circle {
     contentURI: string
 }
 
-type CreateCommentArgs = {
+type CreatePostArgs = {
     image: File | null
     title: string
     description: string
     content: string
     selectedProof: circle | undefined
-    pubIdPointed: string
 }
 
 const PINATA_JWT = process.env.PINATA_JWT
 
-export function useCreateCommentWithDispatcher() {
+export function useCreatePostWithDispatcher() {
     const { mutateAsync: requestTypedData } = useCreatePostTypedDataMutation()
     const { mutateAsync: uploadToIpfs } = useStorageUpload()
     const { profileQuery } = useLensUser()
@@ -69,14 +68,7 @@ export function useCreateCommentWithDispatcher() {
         // return res.json()
     }
 
-    async function createCommentWithDispatcher({
-        image,
-        title,
-        description,
-        content,
-        selectedProof,
-        pubIdPointed
-    }: CreateCommentArgs) {
+    async function createPostWithDispatcher({ image, title, description, content, selectedProof }: CreatePostArgs) {
         console.log("createPost", image, title, description, content, selectedProof)
         // 0. Login
         await loginUser()
@@ -120,7 +112,7 @@ export function useCreateCommentWithDispatcher() {
             // image: imageIpfsUrl,
             // imageMimeType: null,
             name: title,
-            attributes: <any>[],
+            attributes: [] as any,
             tags: []
         }
 
@@ -158,11 +150,6 @@ export function useCreateCommentWithDispatcher() {
             ]
         )
 
-        const referenceModuleData = ethers.utils.AbiCoder.prototype.encode(
-            ["uint256", "uint256", "uint256", "uint256", "uint256[8]"],
-            [hashedPostBody, proof?.nullifierHash, selectedProof.id.toString(), proof?.externalNullifier, proof?.proof]
-        )
-
         console.log("referenceModuleInitData", referenceModuleInitData)
         console.log("referenceModule", referenceModule)
         console.log("externalNullifier", proof?.externalNullifier)
@@ -173,7 +160,7 @@ export function useCreateCommentWithDispatcher() {
             SEMAPHORE_ZK3_CONTRACT_ADDRESS,
             SEMAPHORE_ZK3_CONTRACT_ABI
         )
-
+        
         const rootOnChain = await semaphoreZk3Contract.call("getMerkleTreeRoot", BigNumber.from(selectedProof.id))
         console.log("rootOnChain", rootOnChain.toString())
         // check if roots match
@@ -211,48 +198,56 @@ export function useCreateCommentWithDispatcher() {
 
         // End of proofs and checks, now we can actually create the post
 
-        const broadcastComment = async () => {
-            const broadcastCommentMutation = {
+        const broadcastPost = async () => {
+            const broadcastPostMutation = {
                 operationName: "Mutation",
                 query: `
-                mutation Mutation($circleId: ID!, $profileId: String!, $pointedPost: String!, $refInitData: String!, $refData: String!, $contentUri: String) {
-                    broadcastComment(circleId: $circleId, profileId: $profileId, pointedPost: $pointedPost, refInitData: $refInitData, refData: $refData, contentURI: $contentUri)
-                  }                  
+                mutation Mutation($circleId: ID!, $profileId: String!, $contentUri: String!, $refInitData: String!, $signature: String) {
+                    broadcastPost(circleId: $circleId, profileId: $profileId, contentURI: $contentUri, refInitData: $refInitData, signature: $signature)
+                  }
                   `,
                 variables: {
                     circleId: selectedProof.id,
                     profileId: profileQuery.data?.defaultProfile?.id,
-                    pointedPost: pubIdPointed,
+                    contentUri: postMetadataIpfsUrl,
                     refInitData: referenceModuleInitData,
-                    refData: referenceModuleData,
-                    contentUri: postMetadataIpfsUrl
                 }
             }
-
+    
             const response = await fetch(ZK3_GRAPHQL_ENDPOINT, {
                 method: "POST",
                 headers: {
                     "x-access-token": `Bearer ${_lensAuthToken}`,
                     "Content-Type": "application/json"
                 },
-                body: JSON.stringify(broadcastCommentMutation)
+                body: JSON.stringify(broadcastPostMutation)
             })
             const data: { data: any } = await response.json()
-            console.log("broadcastComment with Dispatcher: ", data.data)
+            console.log("broadcastPost with Dispatcher: ", data.data)
             return data.data
         }
 
-        const result = await broadcastComment()
+        const result = await broadcastPost()        
 
-        console.log("result", result)
+        console.log("result", result);
         toast({
-            title: `Lens Post Created!`,
-            description: `https://mumbai.polygonscan.com/tx/${result?.broadcastComment}`,
-            status: "success",
-            duration: 300000,
+            render: () => (
+               <Box color="white" p={3} bg="green.500" borderRadius={8}>
+                   <Heading mb={2} size='md'>Lens Post Created!</Heading>
+                   <a href={`https://mumbai.polygonscan.com/tx/${result?.broadcastPost}`} target='_blank'>{`https://mumbai.polygonscan.com/tx/${result?.broadcastPost}`}</a>
+               </Box>
+            ),
+            duration: 10000,
             isClosable: true
         })
+        // toast({
+        //     title: `Lens Post Created!`,
+        //     description: `https://mumbai.polygonscan.com/tx/${result?.broadcastPost}`,
+        //     status: "success",
+        //     duration: 300000,
+        //     isClosable: true
+        // })
     }
 
-    return useMutation(createCommentWithDispatcher)
+    return useMutation(createPostWithDispatcher)
 }

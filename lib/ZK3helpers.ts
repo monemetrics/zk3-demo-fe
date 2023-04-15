@@ -101,3 +101,36 @@ export async function createGithubRepoOwnerProofTypedData(
       value,
     };
   }
+
+export async function createProofOfTwitterTypedData (
+    identityCommitment: string,
+    ethAddress: string,
+    twitterHandle: string,
+  ) {
+    const domain = {
+      name: "Lens Verify",
+      version: "1",
+      chainId: 80001,
+      verifyingContract: "0xCcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC",
+    };
+  
+    const types = {
+      ProofOfTwitter: [
+        { name: "identityCommitment", type: "uint256" },
+        { name: "ethAddress", type: "address" },
+        { name: "twitterHandle", type: "string" },
+      ],
+    };
+  
+    const value = {
+      identityCommitment,
+      ethAddress,
+      twitterHandle,
+    };
+  
+    return {
+      domain,
+      types,
+      value,
+    };
+  }

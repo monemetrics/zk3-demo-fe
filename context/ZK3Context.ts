@@ -19,9 +19,9 @@ export type ZK3ContextType = {
     setMyCircleList: (myCircleList: circle[]) => void,
     setIdentity: (identity: Identity | null) => void,
     setIdentityLinkedEOA: (identityLinkedEOA: string | null) => void,
-    setLensAuthToken: (token: string) => void,
-    setGithubAuthToken: (token: string) => void,
-    setEventbriteAuthToken: (token: string) => void,
+    setLensAuthToken: (token: string | null) => void,
+    setGithubAuthToken: (token: string | null) => void,
+    setEventbriteAuthToken: (token: string | null) => void,
     getActiveGroups: () => string[],
 }
 
@@ -35,8 +35,8 @@ export default React.createContext<ZK3ContextType>({
     setMyCircleList: (myCircleList: circle[]) => myCircleList,
     setIdentity: (identity: Identity | null) => identity,
     setIdentityLinkedEOA: (identityLinkedEOA: string | null) => identityLinkedEOA,
-    setLensAuthToken: (token: string) => token,
-    setGithubAuthToken: (token: string) => token,
-    setEventbriteAuthToken: (token: string) => token,
+    setLensAuthToken: (token: string | null) => token,
+    setGithubAuthToken: (token: string | null) => token,
+    setEventbriteAuthToken: (token: string | null) => token,
     getActiveGroups: () => []
 })

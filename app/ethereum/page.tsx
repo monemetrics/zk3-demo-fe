@@ -1,6 +1,6 @@
 'use client'
 
-import { Divider, Flex, Text, Spacer, Button, Menu, IconButton, MenuButton, MenuItem, MenuList, useToast, Modal, ModalBody, ModalCloseButton, ModalContent, ModalHeader, ModalOverlay, useDisclosure } from "@chakra-ui/react"
+import { Divider, Flex, Text, Spacer, Button, Menu, IconButton, MenuButton, MenuItem, MenuList, useToast, Modal, ModalBody, ModalCloseButton, ModalContent, ModalHeader, ModalOverlay, useDisclosure, Box, Heading } from "@chakra-ui/react"
 import { useContext, useState, useEffect } from 'react'
 import Link from "next/link"
 import { useAddress } from "@thirdweb-dev/react";
@@ -11,6 +11,7 @@ import MyProofList from "./MyProofList";
 import ZK3Context from "../../context/ZK3Context"
 import { useQuery, gql } from '@apollo/client';
 import { InfoIcon, SettingsIcon } from "@chakra-ui/icons";
+import useSignPendingProofs from "../../lib/useSignPendingProofs"
 
 interface circle {
     id: string,
@@ -21,18 +22,59 @@ interface circle {
 }
 
 function EthereumGroupPage() {
-    const { _identity, setMyCircleList, _myCircleList, setIdentity, setIdentityLinkedEOA } = useContext(ZK3Context)
+    const { _identity, setMyCircleList, _myCircleList, setIdentity, setIdentityLinkedEOA, setLensAuthToken } = useContext(ZK3Context)
     const address = useAddress();
     const { isOpen, onOpen, onClose } = useDisclosure()
     const toast = useToast()
+
+    const { signPendingProofs, responseHash } = useSignPendingProofs()
+    const [pendingProofs, setPendingProofs] = useState([])
+
+    useEffect(() => {
+        if (responseHash) {
+
+            toast({
+                render: () => (
+                    <Box color="white" p={3} bg="green.500" borderRadius={8}>
+                        <Heading mb={2} size='md'>Create BalanceOfProof successful!</Heading>
+                        <a href={responseHash} target='_blank'>{responseHash}</a>
+                    </Box>
+                ),
+                duration: 10000
+            })
+        }
+    }, [responseHash])
+
+    useEffect(() => {
+        const handleStorage = () => {
+
+            const pendingProofsString = localStorage.getItem("pendingProofs")
+
+            if (pendingProofsString) {
+                var pendingProofs = JSON.parse(pendingProofsString)
+                console.log("pendingProofs: ", pendingProofs)
+                if (pendingProofs.length > 0)
+                    setPendingProofs(pendingProofs)
+                else
+                    setPendingProofs([])
+            }
+
+        }
+        handleStorage()
+        window.addEventListener('storage', handleStorage)
+        return () => window.removeEventListener('storage', handleStorage)
+    }, [])
 
     const handleDisconnectIdentity = () => {
         localStorage.removeItem("identity")
         localStorage.removeItem("myCircleList")
         localStorage.removeItem("identityLinkedEOA")
+        localStorage.removeItem("pendingProofs")
+        localStorage.removeItem("LH_STORAGE_KEY")
         setIdentityLinkedEOA(null)
         setIdentity(null)
         setMyCircleList([])
+        setLensAuthToken(null)
         toast({
             title: 'Identity Disconnected!',
             description: 'Your Semaphore identity was just disconnected',
@@ -87,6 +129,13 @@ function EthereumGroupPage() {
                     <Text>Loading...</Text>
                 )}
             </Flex>
+
+            {pendingProofs.length !== 0 &&
+                <Box borderColor='#1e2d52' borderWidth='1px' borderRadius='12px' mt={2} p={2} display='flex' alignItems='center' justifyContent='space-between'>
+                    <Heading size='md'>Pending Proofs!</Heading>
+                    <Button onClick={() => signPendingProofs(pendingProofs)} size={{ 'base': 'sm', 'sm': 'md' }} variant='solid' colorScheme='blue' color='#fff' bgColor='#002add'> Sign Pending Proofs </Button>
+                </Box>}
+
             <Text align='center' pt="2" fontSize="lg" fontWeight='bold'> My proofs:</Text>
             <Flex flexDirection='column' p="6" alignItems='center' borderColor='#1e2d52' borderWidth='1px' borderRadius='12px'>
                 <Spacer />

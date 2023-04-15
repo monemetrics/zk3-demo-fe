@@ -24,11 +24,13 @@ export default function LensSignInButton({ }: Props) {
   useEffect(() => {
     const handleStorage = () => {
       isSignedInQuery.refetch()
-      setLensAuthToken(JSON.parse(localStorage.getItem("LH_STORAGE_KEY")!).accessToken)
+      const temp = localStorage.getItem("LH_STORAGE_KEY")
+      if (temp)
+        setLensAuthToken(JSON.parse(temp).accessToken)
     }
 
-    window.addEventListener('storage', handleStorage)
-    return () => window.removeEventListener('storage', handleStorage)
+    window.addEventListener('lens storage', handleStorage)
+    return () => window.removeEventListener('lens storage', handleStorage)
   }, [])
 
   // 1. User needs to connect their wallet
@@ -71,7 +73,7 @@ export default function LensSignInButton({ }: Props) {
   // If it's done loading and there's a default profile
   if (profileQuery.data?.defaultProfile) {
     return (
-      <HStack bgColor='#fff' p='1' borderRadius='8px' mr='2' borderColor='#151c2b' borderWidth={2}>
+      <HStack bgColor='#fff' p='1' borderRadius='8px' borderColor='#151c2b' borderWidth={2}>
         <Text color='#1e2d52'>{profileQuery.data?.defaultProfile.handle}</Text>
         <MediaRenderer
           // @ts-ignore

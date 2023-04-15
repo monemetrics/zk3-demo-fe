@@ -4,7 +4,7 @@ import { PublicationMainFocus, useCreatePostTypedDataMutation } from "../graphql
 import useLensUser from "./auth/useLensUser"
 import { signTypedDataWithOmmittedTypename, splitSignature } from "./helpers"
 import { v4 as uuidv4 } from "uuid"
-import { useToast } from "@chakra-ui/react"
+import { Box, Heading, useToast } from "@chakra-ui/react"
 import {
     LENS_MUMBAI_CONTRACT_ABI,
     LENS_MUMBAI_CONTRACT_ADDRESS,
@@ -29,17 +29,18 @@ interface circle {
     contentURI: string
 }
 
-type CreatePostArgs = {
+type CreateCommentArgs = {
     image: File | null
     title: string
     description: string
     content: string
     selectedProof: circle | undefined
+    pubIdPointed: string
 }
 
 const PINATA_JWT = process.env.PINATA_JWT
 
-export function useCreatePostWithDispatcher() {
+export function useCreateCommentWithDispatcher() {
     const { mutateAsync: requestTypedData } = useCreatePostTypedDataMutation()
     const { mutateAsync: uploadToIpfs } = useStorageUpload()
     const { profileQuery } = useLensUser()
@@ -68,7 +69,14 @@ export function useCreatePostWithDispatcher() {
         // return res.json()
     }
 
-    async function createPostWithDispatcher({ image, title, description, content, selectedProof }: CreatePostArgs) {
+    async function createCommentWithDispatcher({
+        image,
+        title,
+        description,
+        content,
+        selectedProof,
+        pubIdPointed
+    }: CreateCommentArgs) {
         console.log("createPost", image, title, description, content, selectedProof)
         // 0. Login
         await loginUser()
@@ -112,7 +120,7 @@ export function useCreatePostWithDispatcher() {
             // image: imageIpfsUrl,
             // imageMimeType: null,
             name: title,
-            attributes: <any>[],
+            attributes: [] as any,
             tags: []
         }
 
@@ -150,6 +158,11 @@ export function useCreatePostWithDispatcher() {
             ]
         )
 
+        const referenceModuleData = ethers.utils.AbiCoder.prototype.encode(
+            ["uint256", "uint256", "uint256", "uint256", "uint256[8]"],
+            [hashedPostBody, proof?.nullifierHash, selectedProof.id.toString(), proof?.externalNullifier, proof?.proof]
+        )
+
         console.log("referenceModuleInitData", referenceModuleInitData)
         console.log("referenceModule", referenceModule)
         console.log("externalNullifier", proof?.externalNullifier)
@@ -160,7 +173,7 @@ export function useCreatePostWithDispatcher() {
             SEMAPHORE_ZK3_CONTRACT_ADDRESS,
             SEMAPHORE_ZK3_CONTRACT_ABI
         )
-        
+
         const rootOnChain = await semaphoreZk3Contract.call("getMerkleTreeRoot", BigNumber.from(selectedProof.id))
         console.log("rootOnChain", rootOnChain.toString())
         // check if roots match
@@ -198,46 +211,58 @@ export function useCreatePostWithDispatcher() {
 
         // End of proofs and checks, now we can actually create the post
 
-        const broadcastPost = async () => {
-            const broadcastPostMutation = {
+        const broadcastComment = async () => {
+            const broadcastCommentMutation = {
                 operationName: "Mutation",
                 query: `
-                mutation Mutation($circleId: ID!, $profileId: String!, $contentUri: String!, $refInitData: String!, $signature: String) {
-                    broadcastPost(circleId: $circleId, profileId: $profileId, contentURI: $contentUri, refInitData: $refInitData, signature: $signature)
-                  }
+                mutation Mutation($circleId: ID!, $profileId: String!, $pointedPost: String!, $refInitData: String!, $refData: String!, $contentUri: String) {
+                    broadcastComment(circleId: $circleId, profileId: $profileId, pointedPost: $pointedPost, refInitData: $refInitData, refData: $refData, contentURI: $contentUri)
+                  }                  
                   `,
                 variables: {
                     circleId: selectedProof.id,
                     profileId: profileQuery.data?.defaultProfile?.id,
-                    contentUri: postMetadataIpfsUrl,
+                    pointedPost: pubIdPointed,
                     refInitData: referenceModuleInitData,
+                    refData: referenceModuleData,
+                    contentUri: postMetadataIpfsUrl
                 }
             }
-    
+
             const response = await fetch(ZK3_GRAPHQL_ENDPOINT, {
                 method: "POST",
                 headers: {
                     "x-access-token": `Bearer ${_lensAuthToken}`,
                     "Content-Type": "application/json"
                 },
-                body: JSON.stringify(broadcastPostMutation)
+                body: JSON.stringify(broadcastCommentMutation)
             })
             const data: { data: any } = await response.json()
-            console.log("broadcastPost with Dispatcher: ", data.data)
+            console.log("broadcastComment with Dispatcher: ", data.data)
             return data.data
         }
 
-        const result = await broadcastPost()        
+        const result = await broadcastComment()
 
         console.log("result", result)
         toast({
-            title: `Lens Post Created!`,
-            description: `https://mumbai.polygonscan.com/tx/${result?.broadcastPost}`,
-            status: "success",
-            duration: 300000,
+            render: () => (
+               <Box color="white" p={3} bg="green.500" borderRadius={8}>
+                   <Heading mb={2} size='md'>Lens Post Created!</Heading>
+                   <a href={`https://mumbai.polygonscan.com/tx/${result?.broadcastComment}`} target='_blank'>{`https://mumbai.polygonscan.com/tx/${result?.broadcastComment}`}</a>
+               </Box>
+            ),
+            duration: 10000,
             isClosable: true
         })
+        // toast({
+        //     title: `Lens Post Created!`,
+        //     description: `https://mumbai.polygonscan.com/tx/${result?.broadcastComment}`,
+        //     status: "success",
+        //     duration: 300000,
+        //     isClosable: true
+        // })
     }
 
-    return useMutation(createPostWithDispatcher)
+    return useMutation(createCommentWithDispatcher)
 }

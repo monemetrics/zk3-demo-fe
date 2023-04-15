@@ -88,9 +88,13 @@ export default function ProofPage({ params }: any) {
                         <Heading size="sm" color="#1e2d52">
                             Proof:{" "}
                         </Heading>
-                        <Heading size="sm" p={2} ml={4} color="#1e2d52" wordBreak='break-all' fontWeight='normal'>
-                            {proofData?.proof}
-                        </Heading>
+                            {proofData?.proof.map((entry: any) => {
+                                return (
+                                    <Heading size="sm" p={2} ml={4} color="#1e2d52" wordBreak='break-all' fontWeight='normal'>
+                                        {entry}
+                                    </Heading>
+                                )
+                            })}
                     </Box>
                     <Divider />
                     <Box display="flex" flexDir="column" alignItems="start" justifyContent="end" mt={4}>

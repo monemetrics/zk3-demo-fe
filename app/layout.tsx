@@ -2,7 +2,7 @@
 
 import { Identity } from '@semaphore-protocol/identity'
 import { useState, useEffect } from 'react'
-import { ChakraProvider, Container, Stack, HStack, Text, Spinner, useToast } from '@chakra-ui/react'
+import { ChakraProvider, Container, Stack, HStack, Text, Spinner, useToast, Alert, AlertTitle, Button } from '@chakra-ui/react'
 import { WagmiConfig, createClient, useAccount, useConnect, useDisconnect, useEnsName } from 'wagmi'
 import { ApolloClient, InMemoryCache, ApolloProvider, HttpLink, ApolloLink, gql } from '@apollo/client';
 import { getDefaultProvider } from 'ethers'
@@ -70,15 +70,17 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     const toast = useToast()
     const [_identity, setIdentity] = useState<Identity | null>(null)
     const [_identityLinkedEOA, setIdentityLinkedEOA] = useState<string | null>(null)
-    const [_lensAuthToken, setLensAuthToken] = useState<string>("")
-    const [_githubAuthToken, setGithubAuthToken] = useState<string>("")
-    const [_eventbriteAuthToken, setEventbriteAuthToken] = useState<string>("")
+    const [_lensAuthToken, setLensAuthToken] = useState<string | null>("")
+    const [_githubAuthToken, setGithubAuthToken] = useState<string | null>("")
+    const [_eventbriteAuthToken, setEventbriteAuthToken] = useState<string | null>("")
     const [_myCircleList, setMyCircleList] = useState<circle[]>([])
+
 
     useEffect(() => {
         const identityString = localStorage.getItem("identity")
         const lensAuthToken = localStorage.getItem("LH_STORAGE_KEY")
         const identityLinkedEOA = localStorage.getItem("identityLinkedEOA")
+
         const graphqlQuery = {
             operationName: "Query",
             query: `query Query($service: String!) {
@@ -148,7 +150,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 const response = await fetch(ZK3_GRAPHQL_ENDPOINT, {
                     method: "POST",
                     headers: {
-                        "x-access-token": `Bearer ${JSON.parse(lensAuthToken!).accessToken}`,
                         "Content-Type": "application/json"
                     },
                     body: JSON.stringify(getCirclesQuery)

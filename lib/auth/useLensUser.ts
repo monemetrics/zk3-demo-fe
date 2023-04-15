@@ -26,7 +26,7 @@ export default function useLensUser() {
         }
     )
 
-    //console.log(profileQuery.data?.defaultProfile)
+    console.log(profileQuery.data?.defaultProfile)
 
     return {
         // Contains information about both the local storage

@@ -229,7 +229,7 @@ export default function Page() {
                                                     href="https://twitter.com/share?ref_src=twsrc%5Etfw"
                                                     className="twitter-share-button"
                                                     data-size="large"
-                                                    data-text="I created a zero knowledge proof with ZK3 Protocol. Check it out on the proof explorer! Generate a proof and mint a free genesis NFT for a limited time only!"
+                                                    data-text="I created a zero knowledge proof with ZK3 Protocol. Check it out on https://zk3.io ! Generate a proof and mint a free genesis NFT for a limited time only!"
                                                     data-url={`https://zk3-app-zk3.vercel.app/genesis`}
                                                     data-via="zk3org"
                                                     data-show-count="false"

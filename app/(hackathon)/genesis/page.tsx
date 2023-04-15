@@ -195,9 +195,7 @@ export default function Page() {
                                     <Text mb={4} align='center'>You own {twitterAccount} on Twitter</Text>
                                     {!hasTwitterProof && <Button onClick={handleCreateTwitterProof} variant='solid' colorScheme='blue' color='#fff' bgColor='#002add'>Generate Proof of {twitterAccount} Twitter handle</Button>}
                                     {hasTwitterProof &&
-                                        <>
-                                            <Text mb={4} align='center'>Proof generated!</Text>
-                                            {/*
+                                        <>                                            {/*
                                             <Box display='flex' justifyContent='center'>
                                                 <Link href={`/proof/${proofReceipt}`} target='_blank'>
                                                     <Button mb={4} variant='solid' colorScheme='blue' color='#fff' bgColor='#002add'>Click to view proof on ZK3 proof explorer</Button>
@@ -224,50 +222,35 @@ export default function Page() {
                                             <Button onClick={() => setHasMinted(true)} isDisabled={hasTweeted} mt={4} variant='solid' bgColor='#002add' color='#fff' colorScheme='blue'>
                                                 MINT NFT
                                             </Button>*/}
+                                            <Box mx={4} display='flex' justifyContent='center'>
+                                                <Text mb={4} align='center'>Proof generated!</Text>
+
+                                                <a
+                                                    href="https://twitter.com/share?ref_src=twsrc%5Etfw"
+                                                    className="twitter-share-button"
+                                                    data-size="large"
+                                                    data-text="I created a zero knowledge proof with ZK3 Protocol. Check it out on the proof explorer! Generate a proof and mint a free genesis NFT for a limited time only!"
+                                                    data-url={`https://zk3-app-zk3.vercel.app/genesis`}
+                                                    data-via="zk3org"
+                                                    data-show-count="false"
+                                                    onClick={() => setHasTweeted(true)}
+                                                >
+                                                </a>
+                                                <script async src="https://platform.twitter.com/widgets.js"></script>
+                                            </Box>
+                                            <Box display='flex' justifyContent='center' flexDir='column' mb={4} alignItems='center'>
+                                                <Text mb={4} align='center'>Share your proof on Lens and get a free NFT:</Text>
+                                                <Button mb={4} variant='solid' colorScheme='blue' color='#fff' bgColor='#002add' onClick={setDispatcher}>Set Dispatcher</Button>
+                                                <Button mb={4} variant='solid' colorScheme='blue' color='#fff' bgColor='#002add' onClick={postToLens}>Post to Lens</Button>
+                                                <Text mb={4} align='center'>Or create a post through our Lenster Fork:</Text>
+                                                <Link href='https://lenster-zk3.vercel.app/' target='_blank'>
+                                                    <Button mb={4} variant='solid' colorScheme='blue' color='#fff' bgColor='#002add'>Go to Lenster ZK3 Edition</Button>
+                                                </Link>
+                                            </Box>
                                         </>
                                     }
-                                    <Box mb={4} display='flex' justifyContent='center'>
-                                        <a
-                                            href="https://twitter.com/share?ref_src=twsrc%5Etfw"
-                                            className="twitter-share-button"
-                                            data-size="large"
-                                            data-text="I created a zero knowledge proof with ZK3 Protocol. Check it out on the proof explorer! Generate a proof and mint a free genesis NFT for a limited time only!"
-                                            data-url={`https://zk3-app-zk3.vercel.app/genesis`}
-                                            data-via="zk3org"
-                                            data-show-count="false"
-                                            onClick={() => setHasTweeted(true)}
-                                        >
-                                        </a>
-                                        <script async src="https://platform.twitter.com/widgets.js"></script>
-                                    </Box>
-                                    <Box display='flex' justifyContent='center' flexDir='column' mb={4} alignItems='center'>
-                                        <Text mb={4} align='center'>Share your proof on Lens and get a free NFT:</Text>
-                                        <Button mb={4} variant='solid' colorScheme='blue' color='#fff' bgColor='#002add' onClick={setDispatcher}>Set Dispatcher</Button>
-                                        <Button mb={4} variant='solid' colorScheme='blue' color='#fff' bgColor='#002add' onClick={postToLens}>Post to Lens</Button>
-                                        <Text mb={4} align='center'>Or create a post through our Lenster Fork:</Text>
-                                        <Link href='https://lenster-zk3.vercel.app/' target='_blank'>
-                                            <Button mb={4} variant='solid' colorScheme='blue' color='#fff' bgColor='#002add'>Go to Lenster ZK3 Edition</Button>
-                                        </Link>
-                                    </Box>
-                                    <Text mb={4} align='center'>
-                                        {hasTweeted ? "Thanks for sharing!" : "Please share your proof on Twitter to be eligible for the mint!"}
-                                    </Text>
                                 </>
 
-                            }
-                        </>
-                    }
-                    {selectedSocial === 'lens' &&
-                        <>
-                            <Text mb={4} align='center' fontSize='xl'>Lens</Text>
-                            <Box mb={4} justifyContent='center' display='flex'>
-                                <LensSignInButton></LensSignInButton>
-                            </Box>
-                            {lensFollowerCount &&
-                                <>
-                                    <Text mb={4} align='center'>You have {lensFollowerCount.toString()} followers on Lens</Text>
-                                    <Button variant='solid' colorScheme='blue' color='#fff' bgColor='#002add'>Generate Proof of {`>= ${getRoundedDownLogCount(lensFollowerCount)}`} followers</Button>
-                                </>
                             }
                         </>
                     }

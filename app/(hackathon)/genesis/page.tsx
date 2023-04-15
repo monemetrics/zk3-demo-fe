@@ -8,6 +8,8 @@ import ZK3Context from "../../../context/ZK3Context";
 import { createProofOfTwitterTypedData } from "../../../lib/ZK3helpers";
 import { useAccount } from "@thirdweb-dev/react";
 import { Identity } from "@semaphore-protocol/identity";
+import TGP from "../../../public/tokyo_genesis.png";
+import Image from "next/image";
 
 export default function Page() {
     const [selectedSocial, setSelectedSocial] = useState<'twitter' | 'lens' | null>(null)
@@ -16,6 +18,7 @@ export default function Page() {
     const [twitterAccount, setTwitterAccount] = useState<any>(null)
     const [proofReceipt, setProofReceipt] = useState<any>(null)
     const [hasTweeted, setHasTweeted] = useState<boolean>(false)
+    const [hasMinted, setHasMinted] = useState<boolean>(false)
     const address = useAccount()
     const { _identity } = useContext(ZK3Context)
 
@@ -53,6 +56,7 @@ export default function Page() {
         if (!_identity) return
         const commitment = new Identity(_identity.toString()).getCommitment()
         const typedData = await createProofOfTwitterTypedData(commitment.toString(), address.toString(), twitterAccount)
+        setProofReceipt(true)
     }
 
     return (
@@ -84,21 +88,23 @@ export default function Page() {
                                                 <Button mb={4} variant='solid' colorScheme='blue' color='#fff' bgColor='#002add'>Click to view proof on ZK3 proof explorer</Button>
                                             </Link>
                                             <Text mb={4} align='center'>Share your proof on Twitter and get a free genesis NFT!</Text>
-                                            <a
-                                                href="https://twitter.com/share?ref_src=twsrc%5Etfw"
-                                                className="twitter-share-button"
-                                                data-size="large"
-                                                data-text="I created a zero knowledge proof with ZK3 Protocol. Check it out on the proof explorer! Generate a proof and mint a free genesis NFT for a limited time only!"
-                                                data-url={`https://zk3-app-zk3.vercel.app/proof/${proofReceipt.txHash}`}
-                                                data-via="zk3org"
-                                                data-show-count="false"
-                                            >
-                                            </a>
-                                            <script async src="https://platform.twitter.com/widgets.js"></script>
+                                            <Box onClick={() => setHasTweeted(true)}>
+                                                <a
+                                                    href="https://twitter.com/share?ref_src=twsrc%5Etfw"
+                                                    className="twitter-share-button"
+                                                    data-size="large"
+                                                    data-text="I created a zero knowledge proof with ZK3 Protocol. Check it out on the proof explorer! Generate a proof and mint a free genesis NFT for a limited time only!"
+                                                    data-url={`https://zk3-app-zk3.vercel.app/proof/${proofReceipt.txHash}`}
+                                                    data-via="zk3org"
+                                                    data-show-count="false"
+                                                >
+                                                </a>
+                                                <script async src="https://platform.twitter.com/widgets.js"></script>
+                                            </Box>
                                             <Text mb={4} align='center'>
                                                 {hasTweeted ? "Thanks for sharing!" : "Please share your proof on Twitter to be eligible for the mint!"}
                                             </Text>
-                                            <Button isDisabled={!hasTweeted} mt={4} variant='solid' bgColor='#002add' color='#fff' colorScheme='blue'>
+                                            <Button onClick={() => setHasMinted(true)} isDisabled={hasTweeted} mt={4} variant='solid' bgColor='#002add' color='#fff' colorScheme='blue'>
                                                 MINT NFT
                                             </Button>
                                         </>
@@ -122,6 +128,12 @@ export default function Page() {
                             }
                         </>
                     }
+                </>
+            }
+            {hasMinted &&
+                <>
+                    <Text align='center' size='xl'>Your ZK3 Tokyo Genesis NFT:</Text>
+                    <Image alt='zk3 Logo' src={TGP} height={500} width={500} style={{ objectFit: 'contain', marginRight: '0px' }}></Image>
                 </>
             }
         </Box>
